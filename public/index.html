@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,318 +6,279 @@
 <title>Quản Lý Tổng Gia Sản</title>
 <style>
   :root {
-    --bg: #0f172a;
-    --card: #1e293b;
-    --card2: #273548;
-    --accent: #38bdf8;
-    --green: #22c55e;
-    --red: #ef4444;
-    --yellow: #fbbf24;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --border: #334155;
+    --bg: #0f172a; --card: #1e293b; --card2: #273548;
+    --accent: #38bdf8; --green: #22c55e; --red: #ef4444;
+    --yellow: #fbbf24; --text: #e2e8f0; --muted: #94a3b8; --border: #334155;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    color: var(--text);
-    padding: 20px;
-    min-height: 100vh;
-  }
+  body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color: var(--text); padding: 20px; min-height: 100vh; }
   .container { max-width: 1000px; margin: 0 auto; }
   h1 { text-align: center; margin-bottom: 4px; font-size: 28px; }
   .subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 14px; }
 
-  .summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-  .summary .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 10px;
-    text-align: center;
-    display: flex; flex-direction: column; gap: 3px;
-    min-width: 0;
-  }
-  .summary .card .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .summary .card .value { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .summary .card .pct { color: var(--muted); font-size: 11px; }
-  .summary .card.total { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; padding: 14px 20px; border-color: rgba(56,189,248,.4); background: rgba(56,189,248,.06); }
-  .summary .card.total .label { font-size: 13px; color: var(--muted); text-transform: none; letter-spacing: 0; }
-  .summary .card.total .value { font-size: 28px; color: var(--accent); }
+  /* Login */
+  #loginScreen { display:flex; justify-content:center; align-items:center; min-height:80vh; }
+  .login-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:40px; width:340px; text-align:center; }
+  .login-box h2 { margin-bottom:8px; font-size:22px; }
+  .login-box p { color:var(--muted); font-size:14px; margin-bottom:24px; }
+  .login-box input { width:100%; background:var(--card2); border:1px solid var(--border); color:var(--text); padding:12px 14px; border-radius:8px; font-size:15px; margin-bottom:12px; outline:none; }
+  .login-box input:focus { border-color:var(--accent); }
+  .login-error { color:var(--red); font-size:13px; margin-top:8px; min-height:20px; }
 
-  .group {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 18px;
-    overflow: hidden;
-  }
-  .group-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 18px;
-    background: var(--card2);
-    cursor: pointer;
-  }
-  .group-header h2 { font-size: 17px; display: flex; align-items: center; gap: 8px; }
-  .group-total { font-weight: 700; color: var(--accent); font-size: 16px; }
-  .group-pct { color: var(--muted); font-size: 13px; margin-left: 8px; }
+  /* Summary */
+  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:24px; }
+  .summary .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; }
+  .summary .card .label { color:var(--muted); font-size:13px; margin-bottom:6px; }
+  .summary .card .value { font-size:22px; font-weight:700; }
+  .summary .card.total .value { color:var(--accent); }
 
-  table { width: 100%; border-collapse: collapse; }
-  th, td { padding: 10px 14px; text-align: left; font-size: 14px; border-bottom: 1px solid var(--border); }
-  th { color: var(--muted); font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; }
-  tr:last-child td { border-bottom: none; }
-  input.cell-input {
-    width: 100%; background: transparent; border: 1px solid transparent;
-    color: var(--text); padding: 6px 8px; border-radius: 6px; font-size: 14px;
-  }
-  input.cell-input:hover, input.cell-input:focus {
-    border-color: var(--border); background: rgba(255,255,255,0.03); outline: none;
-  }
-  input.num { text-align: right; }
-  .row-total { font-weight: 600; color: var(--green); white-space: nowrap; }
-  .btn {
-    border: none; border-radius: 8px; padding: 8px 14px; cursor: pointer;
-    font-size: 13px; font-weight: 600; transition: opacity .2s;
-  }
-  .btn:hover { opacity: .85; }
-  .btn-add { background: var(--accent); color: #042c40; }
-  .btn-del { background: transparent; color: var(--red); padding: 4px 8px; font-size: 16px; }
-  .actions-cell { text-align: center; width: 40px; }
-  .add-row { padding: 12px 18px; display:flex; }
+  /* Groups */
+  .group { background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:18px; overflow:hidden; }
+  .group-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:var(--card2); flex-wrap:wrap; gap:8px; }
+  .group-header h2 { font-size:17px; display:flex; align-items:center; gap:8px; }
+  .group-total { font-weight:700; color:var(--accent); font-size:16px; }
+  .group-pct { color:var(--muted); font-size:13px; margin-left:8px; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:10px 14px; text-align:left; font-size:14px; border-bottom:1px solid var(--border); }
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+  tr:last-child td { border-bottom:none; }
+  input.cell-input { width:100%; background:transparent; border:1px solid transparent; color:var(--text); padding:6px 8px; border-radius:6px; font-size:14px; }
+  input.cell-input:hover, input.cell-input:focus { border-color:var(--border); background:rgba(255,255,255,0.03); outline:none; }
+  input.num { text-align:right; }
+  .row-total { font-weight:600; color:var(--green); white-space:nowrap; }
+  .btn { border:none; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:600; transition:opacity .2s; }
+  .btn:hover { opacity:.85; }
+  .btn-add { background:var(--accent); color:#042c40; }
+  .btn-del { background:transparent; color:var(--red); padding:4px 8px; font-size:16px; }
+  .actions-cell { text-align:center; width:40px; }
+  .add-row { padding:12px 18px; display:flex; }
+  .btn-secondary { background:var(--card2); color:var(--text); border:1px solid var(--border); }
+  .btn-refresh { background:var(--card2); color:var(--accent); border:1px solid var(--accent); font-size:12px; padding:6px 10px; display:flex; align-items:center; gap:6px; }
+  .btn-refresh:disabled { opacity:.5; cursor:default; }
+  .price-note { font-size:11px; color:var(--yellow); margin:0 18px 10px; }
+  .price-time { font-size:11px; color:var(--muted); padding:0 18px 6px; }
+  .spin { display:inline-block; animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
 
-  .chart-wrap {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
-    margin-bottom: 18px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 24px;
-    align-items: center;
-    justify-content: center;
-  }
-  .legend { display: flex; flex-direction: column; gap: 8px; min-width: 180px;}
-  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  /* Chart */
+  .chart-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:18px; display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:center; }
+  .legend { display:flex; flex-direction:column; gap:8px; min-width:180px; }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size:14px; }
+  .legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
 
-  .footer-actions {
-    display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap;
-  }
-  .btn-secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border); }
-  .last-updated { text-align: center; color: var(--muted); font-size: 12px; margin-top: 14px; }
+  /* Sync status bar */
+  #syncBar { text-align:center; font-size:12px; padding:6px 12px; border-radius:8px; margin-bottom:14px; display:none; }
+  #syncBar.ok { background:rgba(34,197,94,.15); color:var(--green); display:block; }
+  #syncBar.err { background:rgba(239,68,68,.15); color:var(--red); display:block; }
+  #syncBar.info { background:rgba(56,189,248,.1); color:var(--accent); display:block; }
 
-  .btn-refresh {
-    background: var(--card2); color: var(--accent); border: 1px solid var(--accent);
-    font-size: 12px; padding: 6px 10px; display:flex; align-items:center; gap:6px;
-  }
-  .btn-refresh:disabled { opacity: .5; cursor: default; }
-  .price-time { font-size: 11px; color: var(--muted); margin-top: 6px; }
-  .spin { display:inline-block; animation: spin 1s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .auto-toggle { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); margin-top:10px; justify-content:center;}
-  .price-note { font-size: 11px; color: var(--yellow); margin: 0 18px 10px; }
+  /* History */
+  .auto-toggle { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); margin-top:10px; justify-content:center; }
+  .footer-actions { display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
+  .last-updated { text-align:center; color:var(--muted); font-size:12px; margin-top:14px; }
 
-  @media (max-width: 600px) {
-    th, td { padding: 8px 6px; font-size: 13px; }
-    .summary { grid-template-columns: repeat(2, 1fr); }
-    .summary .card.total { flex-direction: column; align-items: flex-start; gap: 4px; }
-    .summary .card.total .value { font-size: 22px; }
-  }
+  @media(max-width:600px) { th,td { padding:8px 6px; font-size:13px; } .summary { grid-template-columns:repeat(2,1fr); } }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>💰 Quản Lý Tổng Gia Sản</h1>
-  <p class="subtitle">Dữ liệu được lưu tự động trên trình duyệt này (localStorage)</p>
 
-  <div class="summary" id="summary"></div>
-
-  <div style="display:flex; justify-content:center; margin-bottom:10px;">
-    <button class="btn btn-refresh" id="refreshAllBtn" onclick="refreshAllPrices()" style="font-size:13px; padding:8px 16px; gap:8px;">
-      🔄 Cập nhật tất cả giá
-    </button>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div style="font-size:48px;margin-bottom:12px;">💰</div>
+    <h2>Quản Lý Gia Sản</h2>
+    <p>Nhập mật khẩu để tiếp tục</p>
+    <input type="password" id="pwdInput" placeholder="Mật khẩu..." onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn btn-add" style="width:100%;padding:12px;" onclick="doLogin()">Đăng nhập</button>
+    <div class="login-error" id="loginError"></div>
   </div>
-  <div class="chart-wrap" id="chartWrap"></div>
+</div>
 
-  <div id="groups"></div>
+<!-- MAIN APP (hidden until login) -->
+<div id="mainApp" style="display:none;">
+  <div class="container">
+    <h1>💰 Quản Lý Tổng Gia Sản</h1>
+    <p class="subtitle" id="syncSubtitle">Đang kết nối...</p>
 
-  <div class="group" id="historySection">
-    <div class="group-header" style="flex-wrap:wrap; gap:10px;">
-      <h2>📊 Biến động tài sản</h2>
+    <div id="syncBar"></div>
+    <div class="summary" id="summary"></div>
+
+    <div style="display:flex; justify-content:center; margin-bottom:10px;">
+      <button class="btn btn-refresh" id="refreshAllBtn" onclick="refreshAllPrices()" style="font-size:13px; padding:8px 16px; gap:8px;">
+        🔄 Cập nhật tất cả giá
+      </button>
     </div>
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 18px;">
-      <div style="display:flex; gap:6px; flex-wrap:wrap;">
-        <button class="btn btn-secondary hist-range" data-range="7" onclick="setHistoryRange('7')" style="font-size:12px;padding:5px 12px;">7N</button>
-        <button class="btn btn-secondary hist-range" data-range="30" onclick="setHistoryRange('30')" style="font-size:12px;padding:5px 12px;">1T</button>
-        <button class="btn btn-secondary hist-range" data-range="90" onclick="setHistoryRange('90')" style="font-size:12px;padding:5px 12px;">3T</button>
-        <button class="btn btn-secondary hist-range" data-range="365" onclick="setHistoryRange('365')" style="font-size:12px;padding:5px 12px;">1N</button>
-        <button class="btn btn-secondary hist-range" data-range="all" onclick="setHistoryRange('all')" style="font-size:12px;padding:5px 12px;">Tất cả</button>
+
+    <div class="chart-wrap" id="chartWrap"></div>
+    <div id="groups"></div>
+
+    <!-- HISTORY -->
+    <div class="group" id="historySection">
+      <div class="group-header" style="flex-wrap:wrap; gap:10px;">
+        <h2>📊 Biến động tài sản</h2>
       </div>
-      <select id="historySelect" class="cell-input" style="width:auto; border:1px solid var(--border); padding:6px 10px; border-radius:8px; background:var(--card2);" onchange="renderHistoryChart()"></select>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 18px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button class="btn btn-secondary hist-range" data-range="7" onclick="setHistoryRange('7')" style="font-size:12px;padding:5px 12px;">7N</button>
+          <button class="btn btn-secondary hist-range" data-range="30" onclick="setHistoryRange('30')" style="font-size:12px;padding:5px 12px;">1T</button>
+          <button class="btn btn-secondary hist-range" data-range="90" onclick="setHistoryRange('90')" style="font-size:12px;padding:5px 12px;">3T</button>
+          <button class="btn btn-secondary hist-range" data-range="365" onclick="setHistoryRange('365')" style="font-size:12px;padding:5px 12px;">1N</button>
+          <button class="btn btn-secondary hist-range" data-range="all" onclick="setHistoryRange('all')" style="font-size:12px;padding:5px 12px;">Tất cả</button>
+        </div>
+        <select id="historySelect" class="cell-input" style="width:auto; border:1px solid var(--border); padding:6px 10px; border-radius:8px; background:var(--card2);" onchange="renderHistoryChart()"></select>
+      </div>
+      <div id="historyChartWrap" style="padding: 0 18px 18px;"></div>
     </div>
-    <div id="historyChartWrap" style="padding: 0 18px 18px;"></div>
-  </div>
 
-  <div class="footer-actions">
-    <button class="btn btn-secondary" onclick="exportData()">⬇️ Xuất dữ liệu (JSON)</button>
-    <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆️ Nhập dữ liệu</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-    <button class="btn btn-secondary" style="color:var(--red)" onclick="resetData()">🗑️ Reset toàn bộ</button>
+    <div class="footer-actions">
+      <button class="btn btn-secondary" onclick="exportData()">⬇️ Xuất JSON</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆️ Nhập JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+      <button class="btn btn-secondary" onclick="logoutApp()">🔒 Đăng xuất</button>
+      <button class="btn btn-secondary" style="color:var(--red)" onclick="resetData()">🗑️ Reset toàn bộ</button>
+    </div>
+    <div class="last-updated" id="lastUpdated"></div>
+    <div class="auto-toggle">
+      <input type="checkbox" id="autoSync" checked onchange="saveAutoSyncPref()">
+      <label for="autoSync">Tự động đồng bộ lên Cloud khi sửa</label>
+    </div>
+    <div class="auto-toggle">
+      <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()">
+      <label for="autoRefresh">Tự động cập nhật giá Crypto mỗi 30 giây</label>
+    </div>
   </div>
-  <div class="auto-toggle">
-    <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()">
-    <label for="autoRefresh">Tự động cập nhật giá Crypto mỗi 30 giây</label>
-  </div>
-  <div class="last-updated" id="lastUpdated"></div>
 </div>
 
 <script>
+// ===================== CONFIG =====================
+const APP_PASSWORD = 'Cuong321@'; // đổi nếu muốn
 const STORAGE_KEY = 'asset_manager_data_v1';
+const SESSION_KEY = 'asset_manager_session';
 
+// ===================== DEFAULT DATA =====================
 const DEFAULT_DATA = {
   groups: [
-    {
-      id: 'cash',
-      name: 'Tiền mặt & Tiết kiệm',
-      unit: 'VNĐ',
-      color: '#38bdf8',
-      items: [
-        { name: 'Tiết kiệm ngân hàng', qty: 1, value: 0 },
-        { name: 'Tiền mặt', qty: 1, value: 0 }
-      ]
-    },
-    {
-      id: 'loans',
-      name: 'Cho vay',
-      unit: 'VNĐ',
-      color: '#f472b6',
-      items: [
-        { name: 'Cho vay cá nhân', qty: 1, value: 0 }
-      ]
-    },
-    {
-      id: 'funds',
-      name: 'Chứng chỉ quỹ',
-      unit: 'VNĐ',
-      color: '#a78bfa',
-      items: [
-        { name: 'Quỹ mở', qty: 0, value: 0 }
-      ]
-    },
-    {
-      id: 'stocks',
-      name: 'Cổ phiếu',
-      unit: 'VNĐ',
-      color: '#22c55e',
-      items: [
-        { name: 'VEA', qty: 0, value: 0 }
-      ]
-    },
-    {
-      id: 'crypto',
-      name: 'Crypto',
-      unit: 'VNĐ',
-      color: '#f97316',
-      items: [
-        { name: 'BTC', qty: 0, value: 0 },
-        { name: 'SOL', qty: 0, value: 0 }
-      ]
-    },
-    {
-      id: 'gold',
-      name: 'Vàng',
-      unit: 'VNĐ',
-      color: '#fbbf24',
-      items: [
-        { name: 'Vàng nhẫn 9999 (chỉ)', qty: 0, value: 0 }
-      ]
-    }
+    { id:'cash',   name:'💵 Tiền mặt & Tiết kiệm', unit:'VNĐ', color:'#38bdf8', items:[{name:'Tiết kiệm ngân hàng',qty:1,value:0},{name:'Tiền mặt',qty:1,value:0}] },
+    { id:'loans',  name:'🤝 Cho vay',               unit:'VNĐ', color:'#f472b6', items:[{name:'Cho vay cá nhân',qty:1,value:0}] },
+    { id:'funds',  name:'📜 Chứng chỉ quỹ',         unit:'VNĐ', color:'#a78bfa', items:[{name:'Quỹ mở',qty:0,value:0}] },
+    { id:'stocks', name:'📈 Cổ phiếu',              unit:'VNĐ', color:'#22c55e', items:[{name:'VEA',qty:0,value:0}] },
+    { id:'crypto', name:'🪙 Crypto',                unit:'VNĐ', color:'#f97316', items:[{name:'BTC',qty:0,value:0},{name:'SOL',qty:0,value:0}] },
+    { id:'gold',   name:'🏆 Vàng',                  unit:'VNĐ', color:'#fbbf24', items:[{name:'Vàng nhẫn 9999 (chỉ)',qty:0,value:0}] }
   ],
   history: [],
   lastUpdated: null
 };
 
-let data = loadData();
+// ===================== STATE =====================
+let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+let saveTimer = null;
 
-function loadData() {
+// ===================== LOGIN =====================
+function doLogin() {
+  const pwd = document.getElementById('pwdInput').value;
+  if (pwd === APP_PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('loginError').textContent = 'Mật khẩu không đúng, thử lại.';
+    document.getElementById('pwdInput').value = '';
+  }
+}
+
+function logoutApp() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+// ===================== INIT =====================
+async function initApp() {
+  setSyncBar('⏳ Đang tải dữ liệu từ Cloud...', 'info');
+  const remote = await loadFromCloud();
+  if (remote) {
+    data = remote;
+    if (!Array.isArray(data.history)) data.history = [];
+    migrateData();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    setSyncBar('✅ Đã đồng bộ từ Cloud', 'ok');
+  } else {
+    // fallback localStorage
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { data = JSON.parse(raw); migrateData(); }
+    } catch(e) {}
+    setSyncBar('⚠️ Không kết nối được Cloud — dùng dữ liệu local', 'err');
+  }
+  if (data.history.length === 0) recordSnapshot();
+  const autoOn = localStorage.getItem('asset_auto_sync') !== '0';
+  document.getElementById('autoSync').checked = autoOn;
+  render();
+  setTimeout(() => setSyncBar('', ''), 3000);
+}
+
+function migrateData() {
+  const ids = data.groups.map(g => g.id);
+  if (!ids.includes('loans')) data.groups.splice(1,0,{id:'loans',name:'Cho vay',unit:'VNĐ',color:'#f472b6',items:[{name:'Cho vay cá nhân',qty:1,value:0}]});
+  if (!ids.includes('funds')) {
+    const si = data.groups.findIndex(g=>g.id==='stocks');
+    data.groups.splice(si>=0?si:data.groups.length,0,{id:'funds',name:'Chứng chỉ quỹ',unit:'VNĐ',color:'#a78bfa',items:[{name:'Quỹ mở',qty:0,value:0}]});
+  }
+  // đảm bảo đúng thứ tự funds trước stocks
+  const fi = data.groups.findIndex(g=>g.id==='funds');
+  const si = data.groups.findIndex(g=>g.id==='stocks');
+  if (fi > si && si >= 0) { const [fg]=data.groups.splice(fi,1); data.groups.splice(si,0,fg); }
+  // loans ở vị trí 2
+  const li = data.groups.findIndex(g=>g.id==='loans');
+  const ci = data.groups.findIndex(g=>g.id==='cash');
+  const wantLi = ci>=0 ? ci+1 : 1;
+  if (li>=0 && li!==wantLi) { const [lg]=data.groups.splice(li,1); data.groups.splice(li<wantLi?wantLi-1:wantLi,0,lg); }
+  // Bỏ emoji khỏi tên nhóm
+  const emojiMap = { cash:'Tiền mặt & Tiết kiệm', loans:'Cho vay', funds:'Chứng chỉ quỹ', stocks:'Cổ phiếu', crypto:'Crypto', gold:'Vàng' };
+  data.groups.forEach(g => { if (emojiMap[g.id]) g.name = emojiMap[g.id]; });
+}
+
+// ===================== CLOUD SYNC =====================
+async function loadFromCloud() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      // Migration: thêm nhóm "Chứng chỉ quỹ" nếu dữ liệu cũ chưa có
-      if (parsed.groups) {
-        const stockIdx2 = parsed.groups.findIndex(g => g.id === 'stocks');
-        let fundsIdx = parsed.groups.findIndex(g => g.id === 'funds');
-        const insertPos2 = stockIdx2 >= 0 ? stockIdx2 : parsed.groups.length;
-        if (fundsIdx === -1) {
-          parsed.groups.splice(insertPos2, 0, {
-            id: 'funds', name: 'Chứng chỉ quỹ', unit: 'VNĐ', color: '#a78bfa',
-            items: [{ name: 'Quỹ mở', qty: 0, value: 0 }]
-          });
-        } else if (fundsIdx !== insertPos2) {
-          const [fundsGroup] = parsed.groups.splice(fundsIdx, 1);
-          const newPos = fundsIdx < insertPos2 ? insertPos2 - 1 : insertPos2;
-          parsed.groups.splice(newPos, 0, fundsGroup);
-        }
-      }
-      const cashIdx = parsed.groups.findIndex(g => g.id === 'cash');
-      const insertPos = cashIdx >= 0 ? cashIdx + 1 : 1;
-      let loansIdx = parsed.groups.findIndex(g => g.id === 'loans');
-      if (loansIdx === -1) {
-        parsed.groups.splice(insertPos, 0, {
-          id: 'loans', name: 'Cho vay', unit: 'VNĐ', color: '#f472b6',
-          items: [{ name: 'Cho vay cá nhân', qty: 1, value: 0 }]
-        });
-      } else if (loansIdx !== insertPos) {
-        const [loansGroup] = parsed.groups.splice(loansIdx, 1);
-        const newInsertPos = loansIdx < insertPos ? insertPos - 1 : insertPos;
-        parsed.groups.splice(newInsertPos, 0, loansGroup);
-      }
-      if (!Array.isArray(parsed.history)) parsed.history = [];
-      // Migration: bỏ emoji khỏi tên nhóm
-      const emojiMap = {
-        cash:   'Tiền mặt & Tiết kiệm',
-        loans:  'Cho vay',
-        funds:  'Chứng chỉ quỹ',
-        stocks: 'Cổ phiếu',
-        crypto: 'Crypto',
-        gold:   'Vàng'
-      };
-      parsed.groups.forEach(g => {
-        if (emojiMap[g.id]) g.name = emojiMap[g.id];
-      });
-      return parsed;
-    }
-  } catch(e) {}
-  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+    const res = await fetch('/api/data', { headers: { 'x-app-password': APP_PASSWORD } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch(e) { return null; }
 }
 
-function saveData() {
-  data.lastUpdated = new Date().toLocaleString('vi-VN');
-  recordSnapshot();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  renderLastUpdated();
+async function saveToCloud(silent) {
+  try {
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-app-password': APP_PASSWORD },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    if (!silent) setSyncBar('✅ Đã lưu lên Cloud lúc ' + new Date().toLocaleTimeString('vi-VN'), 'ok');
+    return true;
+  } catch(e) {
+    if (!silent) setSyncBar('⚠️ Lưu Cloud thất bại: ' + e.message, 'err');
+    return false;
+  }
 }
 
-function recordSnapshot() {
-  const now = new Date();
-  const dateKey = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  const snapshot = { date: dateKey, total: grandTotal(), groups: {} };
-  data.groups.forEach(g => { snapshot.groups[g.id] = groupTotal(g); });
-  // Ghi đè mốc cùng ngày (1 mốc/ngày, luôn là mốc mới nhất trong ngày)
-  const idx = data.history.findIndex(h => h.date === dateKey);
-  if (idx >= 0) data.history[idx] = snapshot;
-  else data.history.push(snapshot);
-  data.history.sort((a, b) => a.date.localeCompare(b.date));
+function scheduleSync() {
+  if (localStorage.getItem('asset_auto_sync') === '0') return;
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveToCloud(true), 1500);
+}
+
+function saveAutoSyncPref() {
+  const on = document.getElementById('autoSync').checked;
+  localStorage.setItem('asset_auto_sync', on ? '1' : '0');
+}
+
+function setSyncBar(msg, type) {
+  const el = document.getElementById('syncBar');
+  el.textContent = msg;
+  el.className = type ? type : '';
+  if (!msg) el.style.display = 'none';
 }
 
 function formatNumber(n) {
@@ -984,6 +944,13 @@ if (data.history.length === 0) {
 render();
 // Tự động bật cập nhật giá Crypto ngay khi mở
 toggleAutoRefresh();
+
+// ===================== BOOT =====================
+if (sessionStorage.getItem(SESSION_KEY) === '1') {
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  initApp();
+}
 </script>
 </body>
 </html>
