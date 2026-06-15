@@ -851,11 +851,9 @@ async function refreshGoldPrices(gi) {
         return n.includes('NHẪN') || n.includes('NHAN') || n.includes('9999');
       });
       if (!ring) throw new Error('DOJI: không tìm thấy vàng nhẫn 9999');
-      const buyRaw = ring.Buy ?? ring.buy ?? ring.BuyPrice;
-      if (!buyRaw) throw new Error('DOJI: không có giá mua');
-      // DOJI trả giá theo lượng (cây), chia 10 để ra giá/chỉ
-      const pricePerLuong = buyRaw < 1000000 ? buyRaw * 1000 : buyRaw;
-      return Math.round(pricePerLuong / 10);
+      const sellRaw = ring.Sell ?? ring.sell ?? ring.SellPrice;
+      if (!sellRaw) throw new Error('DOJI: không có giá bán');
+      return sellRaw < 1000000 ? Math.round(sellRaw * 1000) : Math.round(sellRaw);
     },
     async () => {
       // SJC public API (fallback)
@@ -869,11 +867,9 @@ async function refreshGoldPrices(gi) {
         return n.includes('NHẪN') || n.includes('NHAN');
       });
       if (!ring) throw new Error('SJC: không tìm thấy vàng nhẫn');
-      const buyRawSJC = ring.BuyValue ?? ring.Buy ?? ring.buy;
-      if (!buyRawSJC) throw new Error('SJC: không có giá mua');
-      // SJC trả giá theo lượng (cây), chia 10 để ra giá/chỉ
-      const pricePerLuongSJC = buyRawSJC < 1000000 ? buyRawSJC * 1000 : buyRawSJC;
-      return Math.round(pricePerLuongSJC / 10);
+      const sellRaw = ring.SellValue ?? ring.Sell ?? ring.sell;
+      if (!sellRaw) throw new Error('SJC: không có giá bán');
+      return sellRaw < 1000000 ? Math.round(sellRaw * 1000) : Math.round(sellRaw);
     }
   ];
 
