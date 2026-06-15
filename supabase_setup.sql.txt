@@ -1,0 +1,9 @@
+-- Chạy file này trong Supabase SQL Editor (1 lần duy nhất)
+CREATE TABLE IF NOT EXISTS asset_data (
+  id TEXT PRIMARY KEY,
+  payload JSONB NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tắt Row Level Security (vì đã bảo vệ bằng password ở server)
+ALTER TABLE asset_data DISABLE ROW LEVEL SECURITY;

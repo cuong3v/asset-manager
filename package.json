@@ -1,0 +1,8 @@
+{
+  "name": "asset-manager",
+  "version": "1.0.0",
+  "description": "Quản lý tổng gia sản",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
