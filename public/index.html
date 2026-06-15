@@ -141,11 +141,6 @@
 
   <div class="summary" id="summary"></div>
 
-  <div style="display:flex; justify-content:center; margin-bottom:10px;">
-    <button class="btn btn-refresh" id="refreshAllBtn" onclick="refreshAllPrices()" style="font-size:13px; padding:8px 16px; gap:8px;">
-      🔄 Cập nhật tất cả giá
-    </button>
-  </div>
   <div class="chart-wrap" id="chartWrap"></div>
 
   <div id="groups"></div>
@@ -174,7 +169,7 @@
     <button class="btn btn-secondary" style="color:var(--red)" onclick="resetData()">🗑️ Reset toàn bộ</button>
   </div>
   <div class="auto-toggle">
-    <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()">
+    <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
     <label for="autoRefresh">Tự động cập nhật giá Crypto mỗi 30 giây</label>
   </div>
   <div class="last-updated" id="lastUpdated"></div>
@@ -187,7 +182,7 @@ const DEFAULT_DATA = {
   groups: [
     {
       id: 'cash',
-      name: 'Tiền mặt & Tiết kiệm',
+      name: '💵 Tiền mặt & Tiết kiệm',
       unit: 'VNĐ',
       color: '#38bdf8',
       items: [
@@ -197,7 +192,7 @@ const DEFAULT_DATA = {
     },
     {
       id: 'loans',
-      name: 'Cho vay',
+      name: '🤝 Cho vay',
       unit: 'VNĐ',
       color: '#f472b6',
       items: [
@@ -206,7 +201,7 @@ const DEFAULT_DATA = {
     },
     {
       id: 'funds',
-      name: 'Chứng chỉ quỹ',
+      name: '📜 Chứng chỉ quỹ',
       unit: 'VNĐ',
       color: '#a78bfa',
       items: [
@@ -215,7 +210,7 @@ const DEFAULT_DATA = {
     },
     {
       id: 'stocks',
-      name: 'Cổ phiếu',
+      name: '📈 Cổ phiếu',
       unit: 'VNĐ',
       color: '#22c55e',
       items: [
@@ -224,7 +219,7 @@ const DEFAULT_DATA = {
     },
     {
       id: 'crypto',
-      name: 'Crypto',
+      name: '🪙 Crypto',
       unit: 'VNĐ',
       color: '#f97316',
       items: [
@@ -234,7 +229,7 @@ const DEFAULT_DATA = {
     },
     {
       id: 'gold',
-      name: 'Vàng',
+      name: '🏆 Vàng',
       unit: 'VNĐ',
       color: '#fbbf24',
       items: [
@@ -260,7 +255,7 @@ function loadData() {
         const insertPos2 = stockIdx2 >= 0 ? stockIdx2 : parsed.groups.length;
         if (fundsIdx === -1) {
           parsed.groups.splice(insertPos2, 0, {
-            id: 'funds', name: 'Chứng chỉ quỹ', unit: 'VNĐ', color: '#a78bfa',
+            id: 'funds', name: '📜 Chứng chỉ quỹ', unit: 'VNĐ', color: '#a78bfa',
             items: [{ name: 'Quỹ mở', qty: 0, value: 0 }]
           });
         } else if (fundsIdx !== insertPos2) {
@@ -274,7 +269,7 @@ function loadData() {
       let loansIdx = parsed.groups.findIndex(g => g.id === 'loans');
       if (loansIdx === -1) {
         parsed.groups.splice(insertPos, 0, {
-          id: 'loans', name: 'Cho vay', unit: 'VNĐ', color: '#f472b6',
+          id: 'loans', name: '🤝 Cho vay', unit: 'VNĐ', color: '#f472b6',
           items: [{ name: 'Cho vay cá nhân', qty: 1, value: 0 }]
         });
       } else if (loansIdx !== insertPos) {
@@ -283,18 +278,6 @@ function loadData() {
         parsed.groups.splice(newInsertPos, 0, loansGroup);
       }
       if (!Array.isArray(parsed.history)) parsed.history = [];
-      // Migration: bỏ emoji khỏi tên nhóm
-      const emojiMap = {
-        cash:   'Tiền mặt & Tiết kiệm',
-        loans:  'Cho vay',
-        funds:  'Chứng chỉ quỹ',
-        stocks: 'Cổ phiếu',
-        crypto: 'Crypto',
-        gold:   'Vàng'
-      };
-      parsed.groups.forEach(g => {
-        if (emojiMap[g.id]) g.name = emojiMap[g.id];
-      });
       return parsed;
     }
   } catch(e) {}
@@ -325,22 +308,6 @@ function formatNumber(n) {
   return Math.round(n).toLocaleString('vi-VN');
 }
 
-function formatInput(n) {
-  if (!n && n !== 0) return '';
-  const num = parseNumber(n);
-  return num === 0 ? '0' : Math.round(num).toLocaleString('vi-VN');
-}
-
-function onInputFocus(el) {
-  el.value = parseNumber(el.value) || '';
-  el.select();
-}
-
-function onInputBlur(el) {
-  const num = parseNumber(el.value);
-  el.value = num === 0 ? '0' : Math.round(num).toLocaleString('vi-VN');
-}
-
 function parseNumber(str) {
   if (typeof str === 'number') return str;
   const cleaned = (str || '').toString().replace(/[^0-9.\-]/g, '');
@@ -349,7 +316,7 @@ function parseNumber(str) {
 }
 
 function groupTotal(group) {
-  if (['funds', 'cash', 'loans'].includes(group.id)) {
+  if (group.id === 'funds') {
     return group.items.reduce((s, i) => s + (i.value || 0), 0);
   }
   return group.items.reduce((sum, item) => sum + (item.qty * item.value), 0);
@@ -451,9 +418,8 @@ function renderGroups() {
           ? `<button class="btn btn-refresh" id="refresh-${g.id}" onclick="refreshGoldPrices(${gi})">🔄 Cập nhật giá DOJI</button>`
           : '';
 
-    // Nhóm chỉ nhập tổng tiền: cash, loans, funds
-    if (['cash', 'loans', 'funds'].includes(g.id)) {
-      const label = g.id === 'funds' ? 'Tên quỹ' : 'Tên';
+    // Nhóm Chứng chỉ quỹ: chỉ nhập tên + tổng tiền
+    if (g.id === 'funds') {
       html += `<div class="group">
         <div class="group-header">
           <h2><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${g.color}"></span>
@@ -465,20 +431,19 @@ function renderGroups() {
           </div>
         </div>
         <table><thead><tr>
-          <th style="font-weight:400">${label}</th>
+          <th style="font-weight:400">Tên quỹ</th>
           <th style="text-align:right;font-weight:400">Tổng tiền (₫)</th>
           <th></th>
         </tr></thead><tbody>`;
       g.items.forEach((item, ii) => {
         html += `<tr>
           <td><input class="cell-input" value="${escapeHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-          <td><input class="cell-input num" type="text" value="${formatInput(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>
+          <td><input class="cell-input num" type="text" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
           <td class="actions-cell"><button class="btn btn-del" onclick="deleteItem(${gi},${ii})">✕</button></td>
         </tr>`;
       });
-      const addLabel = g.id === 'funds' ? '+ Thêm quỹ' : '+ Thêm';
       html += `</tbody></table>
-        <div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">${addLabel}</button></div>
+        <div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">+ Thêm quỹ</button></div>
       </div>`;
       return;
     }
@@ -510,9 +475,9 @@ function renderGroups() {
       const isC = g.id === 'crypto';
       html+=`<tr>
         <td><input class="cell-input" value="${escapeHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-        <td><input class="cell-input num" type="text" value="${formatInput(item.qty)}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>
-        ${isC ? `<td><input class="cell-input num" type="text" value="${item.valueUsd||''}" placeholder="USD" onchange="updateItem(${gi},${ii},'valueUsd',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)" style="color:var(--yellow)"></td>` : ''}
-        ${isC ? `<td class="row-total" style="color:var(--yellow)">${item.valueUsd ? (item.qty * item.valueUsd).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'}</td>` : `<td><input class="cell-input num" type="text" value="${formatInput(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>`}
+        <td><input class="cell-input num" type="text" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
+        ${isC ? `<td><input class="cell-input num" type="text" value="${item.valueUsd||''}" placeholder="USD" onchange="updateItem(${gi},${ii},'valueUsd',this.value)" onfocus="this.select()" style="color:var(--yellow)"></td>` : ''}
+        ${isC ? `<td class="row-total" style="color:var(--yellow)">${item.valueUsd ? (item.qty * item.valueUsd).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'}</td>` : `<td><input class="cell-input num" type="text" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>`}
         <td class="row-total">${formatNumber(rt)}</td>
         <td class="actions-cell"><button class="btn btn-del" onclick="deleteItem(${gi},${ii})" title="Xóa">✕</button></td>
       </tr>`;
@@ -766,22 +731,6 @@ function formatCompact(n) {
   return n.toFixed(0);
 }
 
-async function refreshAllPrices() {
-  const btn = document.getElementById('refreshAllBtn');
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spin">🔄</span> Đang cập nhật...';
-  btn.disabled = true;
-  const tasks = [];
-  data.groups.forEach((g, gi) => {
-    if (g.id === 'crypto') tasks.push(refreshCryptoPrices(gi));
-    if (g.id === 'stocks') tasks.push(refreshStockPrices(gi));
-    if (g.id === 'gold')   tasks.push(refreshGoldPrices(gi));
-  });
-  await Promise.allSettled(tasks);
-  btn.innerHTML = orig;
-  btn.disabled = false;
-}
-
 // ===== Live price fetching =====
 const CRYPTO_MAP = {
   BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', BNB: 'binancecoin',
@@ -981,8 +930,6 @@ if (data.history.length === 0) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 render();
-// Tự động bật cập nhật giá Crypto ngay khi mở
-toggleAutoRefresh();
 </script>
 </body>
 </html>
