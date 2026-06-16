@@ -198,26 +198,35 @@ function logoutApp() {
 // ===================== INIT =====================
 async function initApp() {
   setSyncBar('⏳ Đang tải dữ liệu từ Cloud...', 'info');
-  const remote = await loadFromCloud();
-  if (remote) {
-    data = remote;
+  try {
+    const remote = await loadFromCloud();
+    if (remote) {
+      data = remote;
+      if (!Array.isArray(data.history)) data.history = [];
+      migrateData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setSyncBar('✅ Đã đồng bộ từ Cloud', 'ok');
+    } else {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) { data = JSON.parse(raw); migrateData(); }
+      } catch(e) {}
+      setSyncBar('⚠️ Không kết nối được Cloud — dùng dữ liệu local', 'err');
+    }
     if (!Array.isArray(data.history)) data.history = [];
-    migrateData();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    setSyncBar('✅ Đã đồng bộ từ Cloud', 'ok');
-  } else {
-    // fallback localStorage
+    if (data.history.length === 0) recordSnapshot();
+    const autoOn = localStorage.getItem('asset_auto_sync') !== '0';
+    document.getElementById('autoSync').checked = autoOn;
+    render();
+    setTimeout(() => setSyncBar('', ''), 3000);
+  } catch(e) {
+    setSyncBar('❌ Lỗi khởi động: ' + e.message, 'err');
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) { data = JSON.parse(raw); migrateData(); }
-    } catch(e) {}
-    setSyncBar('⚠️ Không kết nối được Cloud — dùng dữ liệu local', 'err');
+      if (raw) { data = JSON.parse(raw); }
+    } catch(e2) {}
+    render();
   }
-  if (data.history.length === 0) recordSnapshot();
-  const autoOn = localStorage.getItem('asset_auto_sync') !== '0';
-  document.getElementById('autoSync').checked = autoOn;
-  render();
-  setTimeout(() => setSyncBar('', ''), 3000);
 }
 
 function migrateData() {
@@ -245,9 +254,14 @@ function migrateData() {
 async function loadFromCloud() {
   try {
     const res = await fetch('/api/data', { headers: { 'x-app-password': APP_PASSWORD } });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch(e) { return null; }
+    if (!res.ok) {
+      console.warn('loadFromCloud failed:', res.status, await res.text());
+      return null;
+    }
+    const json = await res.json();
+    if (json && json.error) { console.warn('loadFromCloud error:', json.error); return null; }
+    return json;
+  } catch(e) { console.warn('loadFromCloud exception:', e); return null; }
 }
 
 async function saveToCloud(silent) {
