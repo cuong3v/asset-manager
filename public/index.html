@@ -363,16 +363,17 @@ function formatNumber(n) { return isNaN(n)?'0':Math.round(n).toLocaleString('vi-
 function parseNumber(s)  { 
   if(!s) return 0;
   const str = s.toString().trim();
-  // Handle decimal point: keep the last dot if it's followed by 1-2 digits
+  // Handle decimal point: keep the last dot if it's followed by 1-4 digits (typical decimal places)
   const lastDotIndex = str.lastIndexOf('.');
   let num;
   if(lastDotIndex > 0){
     const afterDot = str.substring(lastDotIndex + 1);
-    if(/^\d{1,2}$/.test(afterDot)){
+    // If last dot is followed by 1-4 digits, likely a decimal point
+    if(/^\d{1,4}$/.test(afterDot)){
       // Last dot is decimal point, remove other dots (thousand separators)
       num = parseFloat(str.substring(0, lastDotIndex).replace(/\./g, '') + '.' + afterDot);
     } else {
-      // Last dot is thousand separator, remove all dots
+      // 5+ digits after dot = thousand separator, remove all dots
       num = parseFloat(str.replace(/\./g, ''));
     }
   } else {
