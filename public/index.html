@@ -307,7 +307,12 @@ function setSyncBar(msg, type) {
 }
 
 // ===================== DATA HELPERS =====================
-function groupTotal(g) { return g.items.reduce((s,i) => s + i.qty*i.value, 0); }
+function groupTotal(g) { 
+  if(['cash','loans','funds'].includes(g.id)) {
+    return g.items.reduce((s,i) => s + i.value, 0);
+  }
+  return g.items.reduce((s,i) => s + i.qty*i.value, 0); 
+}
 function grandTotal()  { return data.groups.reduce((s,g) => s + groupTotal(g), 0); }
 
 function saveData() {
@@ -403,18 +408,29 @@ function renderGroups() {
       ${g.id==='crypto'?`<div class="price-note">ℹ️ Tên tài sản chứa ký hiệu coin (BTC, ETH, SOL...). Nguồn: CoinGecko (VNĐ).</div>`:''}
       ${g.id==='gold'?`<div class="price-note">ℹ️ Giá bán ra Vàng nhẫn 9999 (VNĐ/chỉ). Nguồn: DOJI, dự phòng SJC.</div>`:''}
       <table><thead><tr>
-        <th>Tên tài sản</th><th style="text-align:right">Số lượng</th>
-        <th style="text-align:right">Giá / Đơn vị (₫)</th><th style="text-align:right">Thành tiền (₫)</th><th></th>
+        ${['cash','loans','funds'].includes(g.id)?
+          '<th>Tên tài sản</th><th style="text-align:right">Tổng tiền (₫)</th><th></th>' :
+          '<th>Tên tài sản</th><th style="text-align:right">Số lượng</th><th style="text-align:right">Giá / Đơn vị (₫)</th><th style="text-align:right">Thành tiền (₫)</th><th></th>'
+        }
       </tr></thead><tbody>`;
     g.items.forEach((item,ii) => {
       const rt=item.qty*item.value;
-      html+=`<tr>
-        <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-        <td><input class="cell-input num" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
-        <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
-        <td class="row-total">${formatNumber(rt)}</td>
-        <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
-      </tr>`;
+      const isSimple=['cash','loans','funds'].includes(g.id);
+      if(isSimple){
+        html+=`<tr>
+          <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
+          <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()" style="text-align:right;"></td>
+          <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
+        </tr>`;
+      }else{
+        html+=`<tr>
+          <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
+          <td><input class="cell-input num" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
+          <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
+          <td class="row-total">${formatNumber(rt)}</td>
+          <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
+        </tr>`;
+      }
     });
     html+=`</tbody></table><div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">+ Thêm tài sản</button></div></div>`;
   });
