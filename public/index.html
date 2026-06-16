@@ -25,15 +25,13 @@
   .login-box input:focus { border-color:var(--accent); }
   .login-error { color:var(--red); font-size:13px; margin-top:8px; min-height:20px; }
 
-  /* Summary */
-  .summary { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-bottom:24px; }
-  .summary .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 10px; text-align:center; display:flex; flex-direction:column; gap:3px; min-width:0; }
-  .summary .card .label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .summary .card .value { font-size:16px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .summary .card .pct { color:var(--muted); font-size:11px; }
-  .summary .card.total { grid-column:1/-1; flex-direction:row; align-items:center; justify-content:space-between; padding:14px 20px; border-color:rgba(56,189,248,.4); background:rgba(56,189,248,.06); }
-  .summary .card.total .label { font-size:13px; color:var(--muted); text-transform:none; letter-spacing:0; }
-  .summary .card.total .value { font-size:28px; color:var(--accent); }
+  /* Summary - Compact horizontal layout */
+  .summary { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:stretch; }
+  .summary .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; flex:1; min-width:140px; }
+  .summary .card .label { color:var(--muted); font-size:12px; margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+  .summary .card .value { font-size:18px; font-weight:700; }
+  .summary .card.total { background:linear-gradient(135deg,#1e293b 0%,#273548 100%); border:1px solid var(--accent); flex:0 1 auto; min-width:200px; }
+  .summary .card.total .value { color:var(--accent); font-size:22px; }
 
   /* Groups */
   .group { background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:18px; overflow:hidden; }
@@ -52,7 +50,7 @@
   .btn { border:none; border-radius:8px; padding:8px 14px; cursor:pointer; font-size:13px; font-weight:600; transition:opacity .2s; }
   .btn:hover { opacity:.85; }
   .btn-add { background:var(--accent); color:#042c40; }
-  .btn-del { background:transparent; color:var(--red); padding:4px 8px; font-size:16px; }
+  .btn-del { background:transparent; color:var(--red); padding:4px 8px; font-size:16px; cursor:pointer; border:none; }
   .actions-cell { text-align:center; width:40px; }
   .add-row { padding:12px 18px; display:flex; }
   .btn-secondary { background:var(--card2); color:var(--text); border:1px solid var(--border); }
@@ -63,11 +61,21 @@
   .spin { display:inline-block; animation:spin 1s linear infinite; }
   @keyframes spin { to { transform:rotate(360deg); } }
 
+  /* Center Update Button */
+  .center-update { display:flex; justify-content:center; margin:24px 0; }
+  .btn-update-all { background:var(--accent); color:#042c40; padding:10px 24px; font-size:14px; }
+
   /* Chart */
-  .chart-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:18px; display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:center; }
+  .chart-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:18px; }
   .legend { display:flex; flex-direction:column; gap:8px; min-width:180px; }
   .legend-item { display:flex; align-items:center; gap:8px; font-size:14px; }
   .legend-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+
+  /* Stat Cards for History */
+  .stat-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px; }
+  .stat-card { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+  .stat-card .label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.5px; }
+  .stat-card .value { font-size:18px; font-weight:700; margin-top:4px; }
 
   /* Sync status bar */
   #syncBar { text-align:center; font-size:12px; padding:6px 12px; border-radius:8px; margin-bottom:14px; display:none; }
@@ -75,12 +83,29 @@
   #syncBar.err { background:rgba(239,68,68,.15); color:var(--red); display:block; }
   #syncBar.info { background:rgba(56,189,248,.1); color:var(--accent); display:block; }
 
+  /* History Range Buttons - Compact */
+  .history-range-btns { display:flex; gap:6px; flex-wrap:wrap; padding:0 18px 12px; }
+  .history-range-btns .btn-secondary { padding:6px 10px; font-size:12px; }
+
   /* History */
   .auto-toggle { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); margin-top:10px; justify-content:center; }
   .footer-actions { display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap; }
   .last-updated { text-align:center; color:var(--muted); font-size:12px; margin-top:14px; }
 
-  @media(max-width:600px) { th,td { padding:8px 6px; font-size:13px; } .summary { grid-template-columns:repeat(2,1fr); } .summary .card.total { flex-direction:column; align-items:flex-start; gap:4px; } .summary .card.total .value { font-size:22px; } }
+  /* Delete Confirmation Modal */
+  .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; }
+  .modal.show { display:flex; }
+  .modal-content { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:400px; text-align:center; }
+  .modal-content h3 { margin-bottom:16px; font-size:18px; }
+  .modal-content p { color:var(--muted); margin-bottom:20px; }
+  .modal-actions { display:flex; gap:12px; justify-content:center; }
+  .modal-actions .btn { flex:1; }
+
+  @media(max-width:600px) { 
+    th,td { padding:8px 6px; font-size:13px; } 
+    .summary { flex-direction:column; }
+    .summary .card { min-width:100%; }
+  }
 </style>
 </head>
 <body>
@@ -100,16 +125,15 @@
 <!-- MAIN APP (hidden until login) -->
 <div id="mainApp" style="display:none;">
   <div class="container">
-    <h1>💰 Quản Lý Tổng Gia Sản</h1>
+    <h1>Quản Lý Tổng Gia Sản</h1>
     <p class="subtitle" id="syncSubtitle">Đang kết nối...</p>
 
     <div id="syncBar"></div>
     <div class="summary" id="summary"></div>
 
-    <div style="display:flex; justify-content:center; margin-bottom:10px;">
-      <button class="btn btn-refresh" id="refreshAllBtn" onclick="refreshAllPrices()" style="font-size:13px; padding:8px 16px; gap:8px;">
-        🔄 Cập nhật tất cả giá
-      </button>
+    <!-- CENTER UPDATE BUTTON -->
+    <div class="center-update">
+      <button class="btn btn-update-all" onclick="updateAllPrices()">🔄 Cập nhật tất cả giá</button>
     </div>
 
     <div class="chart-wrap" id="chartWrap"></div>
@@ -119,851 +143,356 @@
     <div class="group" id="historySection">
       <div class="group-header" style="flex-wrap:wrap; gap:10px;">
         <h2>📊 Biến động tài sản</h2>
+        <select id="historySelect" class="cell-input" style="width:auto; border:1px solid var(--border);" onchange="renderHistoryChart()"></select>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:12px 18px;">
-        <div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-secondary hist-range" data-range="7" onclick="setHistoryRange('7')" style="font-size:12px;padding:5px 12px;">7N</button>
-          <button class="btn btn-secondary hist-range" data-range="30" onclick="setHistoryRange('30')" style="font-size:12px;padding:5px 12px;">1T</button>
-          <button class="btn btn-secondary hist-range" data-range="90" onclick="setHistoryRange('90')" style="font-size:12px;padding:5px 12px;">3T</button>
-          <button class="btn btn-secondary hist-range" data-range="365" onclick="setHistoryRange('365')" style="font-size:12px;padding:5px 12px;">1N</button>
-          <button class="btn btn-secondary hist-range" data-range="all" onclick="setHistoryRange('all')" style="font-size:12px;padding:5px 12px;">Tất cả</button>
-        </div>
-        <select id="historySelect" class="cell-input" style="width:auto; border:1px solid var(--border); padding:6px 10px; border-radius:8px; background:var(--card2);" onchange="renderHistoryChart()"></select>
+      <div id="statCardsWrap" style="padding:0 18px 12px;"></div>
+      <div class="history-range-btns">
+        <button class="btn btn-secondary" data-range="7" onclick="setHistoryRange('7')">7N</button>
+        <button class="btn btn-secondary" data-range="30" onclick="setHistoryRange('30')">1T</button>
+        <button class="btn btn-secondary" data-range="90" onclick="setHistoryRange('90')">3T</button>
+        <button class="btn btn-secondary" data-range="365" onclick="setHistoryRange('365')">1N</button>
+        <button class="btn btn-secondary" data-range="all" onclick="setHistoryRange('all')">Tất cả</button>
+        <button class="btn btn-add" style="margin-left:auto;" onclick="manualSnapshot()">📌 Lưu mốc hôm nay</button>
       </div>
-      <div id="historyChartWrap" style="padding: 0 18px 18px;"></div>
+      <div id="historyChartWrap" style="padding:0 18px 18px;"></div>
     </div>
 
     <div class="footer-actions">
       <button class="btn btn-secondary" onclick="exportData()">⬇️ Xuất JSON</button>
       <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">⬆️ Nhập JSON</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
-      <button class="btn btn-secondary" onclick="logoutApp()">🔒 Đăng xuất</button>
-      <button class="btn btn-secondary" style="color:var(--red)" onclick="resetData()">🗑️ Reset toàn bộ</button>
     </div>
-    <div class="last-updated" id="lastUpdated"></div>
-    <div class="auto-toggle">
-      <input type="checkbox" id="autoSync" checked onchange="saveAutoSyncPref()">
-      <label for="autoSync">Tự động đồng bộ lên Cloud khi sửa</label>
-    </div>
-    <div class="auto-toggle">
-      <input type="checkbox" id="autoRefresh" checked onchange="toggleAutoRefresh()">
-      <label for="autoRefresh">Tự động cập nhật giá Crypto mỗi 30 giây</label>
+
+  </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <h3>Xác nhận xóa</h3>
+    <p id="deleteMessage"></p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="cancelDelete()">Hủy</button>
+      <button class="btn btn-del" style="background:#ef4444;color:white;flex:1;" onclick="confirmDelete()">Xóa</button>
     </div>
   </div>
 </div>
 
 <script>
-// ===================== CONFIG =====================
-const APP_PASSWORD = 'Cuong321@'; // đổi nếu muốn
-const STORAGE_KEY = 'asset_manager_data_v1';
-const SESSION_KEY = 'asset_manager_session';
+const STORAGE_KEY='wealth_data';const HISTORY_KEY='wealth_history';const SESSION_KEY='logged_in';const CLOUD_KEY='wealth_cloud_key';
+let data={groups:[]},history=[],deleteItem=null;
 
-// ===================== DEFAULT DATA =====================
-const DEFAULT_DATA = {
-  groups: [
-    { id:'cash',   name:'💵 Tiền mặt & Tiết kiệm', unit:'VNĐ', color:'#38bdf8', items:[{name:'Tiết kiệm ngân hàng',qty:1,value:0},{name:'Tiền mặt',qty:1,value:0}] },
-    { id:'loans',  name:'🤝 Cho vay',               unit:'VNĐ', color:'#f472b6', items:[{name:'Cho vay cá nhân',qty:1,value:0}] },
-    { id:'funds',  name:'📜 Chứng chỉ quỹ',         unit:'VNĐ', color:'#a78bfa', items:[{name:'Quỹ mở',qty:0,value:0}] },
-    { id:'stocks', name:'📈 Cổ phiếu',              unit:'VNĐ', color:'#22c55e', items:[{name:'VEA',qty:0,value:0}] },
-    { id:'crypto', name:'🪙 Crypto',                unit:'VNĐ', color:'#f97316', items:[{name:'BTC',qty:0,value:0},{name:'SOL',qty:0,value:0}] },
-    { id:'gold',   name:'🏆 Vàng',                  unit:'VNĐ', color:'#fbbf24', items:[{name:'Vàng nhẫn 9999 (chỉ)',qty:0,value:0}] }
-  ],
-  history: [],
-  lastUpdated: null
-};
+// ===================== UTILS =====================
+function formatNumber(n){if(!n)return '0 ₫';const s=(Math.round(n)).toString();const parts=[];for(let i=s.length;i>0;i-=3)parts.unshift(s.slice(Math.max(0,i-3),i));return parts.join('.')+' ₫';}
+function formatNumberInput(input){input.addEventListener('input',()=>{let v=input.value.replace(/\D/g,'');const i=parseInt(v)||0;input.dataset.value=i;});input.addEventListener('blur',()=>{const i=parseInt(input.dataset.value)||0;input.value=formatNumber(i).replace(' ₫','');});}
+function removeEmojis(s){return s.replace(/[\p{Emoji}]/gu,'').replace(/[^\x20-\x7E\u0080-\uFFFF]/g,'').trim();}
 
-// ===================== STATE =====================
-let data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-let saveTimer = null;
-
-// ===================== LOGIN =====================
-function doLogin() {
-  const pwd = document.getElementById('pwdInput').value;
-  if (pwd === APP_PASSWORD) {
-    sessionStorage.setItem(SESSION_KEY, '1');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    initApp();
-  } else {
-    document.getElementById('loginError').textContent = 'Mật khẩu không đúng, thử lại.';
-    document.getElementById('pwdInput').value = '';
-  }
-}
-
-function logoutApp() {
-  sessionStorage.removeItem(SESSION_KEY);
-  location.reload();
-}
-
-// ===================== INIT =====================
-async function initApp() {
-  setSyncBar('⏳ Đang tải dữ liệu từ Cloud...', 'info');
-  try {
-    const remote = await loadFromCloud();
-    if (remote) {
-      data = remote;
-      if (!Array.isArray(data.history)) data.history = [];
-      migrateData();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      setSyncBar('✅ Đã đồng bộ từ Cloud', 'ok');
-    } else {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) { data = JSON.parse(raw); migrateData(); }
-      } catch(e) {}
-      setSyncBar('⚠️ Không kết nối được Cloud — dùng dữ liệu local', 'err');
-    }
-    if (!Array.isArray(data.history)) data.history = [];
-    if (data.history.length === 0) recordSnapshot();
-    const autoOn = localStorage.getItem('asset_auto_sync') !== '0';
-    document.getElementById('autoSync').checked = autoOn;
-    render();
-    setTimeout(() => setSyncBar('', ''), 3000);
-  } catch(e) {
-    setSyncBar('❌ Lỗi khởi động: ' + e.message, 'err');
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) { data = JSON.parse(raw); }
-    } catch(e2) {}
-    render();
-  }
-}
-
-function migrateData() {
-  const ids = data.groups.map(g => g.id);
-  if (!ids.includes('loans')) data.groups.splice(1,0,{id:'loans',name:'Cho vay',unit:'VNĐ',color:'#f472b6',items:[{name:'Cho vay cá nhân',qty:1,value:0}]});
-  if (!ids.includes('funds')) {
-    const si = data.groups.findIndex(g=>g.id==='stocks');
-    data.groups.splice(si>=0?si:data.groups.length,0,{id:'funds',name:'Chứng chỉ quỹ',unit:'VNĐ',color:'#a78bfa',items:[{name:'Quỹ mở',qty:0,value:0}]});
-  }
-  // đảm bảo đúng thứ tự funds trước stocks
-  const fi = data.groups.findIndex(g=>g.id==='funds');
-  const si = data.groups.findIndex(g=>g.id==='stocks');
-  if (fi > si && si >= 0) { const [fg]=data.groups.splice(fi,1); data.groups.splice(si,0,fg); }
-  // loans ở vị trí 2
-  const li = data.groups.findIndex(g=>g.id==='loans');
-  const ci = data.groups.findIndex(g=>g.id==='cash');
-  const wantLi = ci>=0 ? ci+1 : 1;
-  if (li>=0 && li!==wantLi) { const [lg]=data.groups.splice(li,1); data.groups.splice(li<wantLi?wantLi-1:wantLi,0,lg); }
-  // Bỏ emoji khỏi tên nhóm
-  const emojiMap = { cash:'Tiền mặt & Tiết kiệm', loans:'Cho vay', funds:'Chứng chỉ quỹ', stocks:'Cổ phiếu', crypto:'Crypto', gold:'Vàng' };
-  data.groups.forEach(g => { if (emojiMap[g.id]) g.name = emojiMap[g.id]; });
-}
-
-// ===================== CLOUD SYNC =====================
-async function loadFromCloud() {
-  try {
-    const res = await fetch('/api/data', { headers: { 'x-app-password': APP_PASSWORD } });
-    if (!res.ok) {
-      console.warn('loadFromCloud failed:', res.status, await res.text());
-      return null;
-    }
-    const json = await res.json();
-    if (json && json.error) { console.warn('loadFromCloud error:', json.error); return null; }
-    return json;
-  } catch(e) { console.warn('loadFromCloud exception:', e); return null; }
-}
-
-async function saveToCloud(silent) {
-  try {
-    const res = await fetch('/api/data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-app-password': APP_PASSWORD },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    if (!silent) setSyncBar('✅ Đã lưu lên Cloud lúc ' + new Date().toLocaleTimeString('vi-VN'), 'ok');
-    return true;
-  } catch(e) {
-    if (!silent) setSyncBar('⚠️ Lưu Cloud thất bại: ' + e.message, 'err');
-    return false;
-  }
-}
-
-function scheduleSync() {
-  if (localStorage.getItem('asset_auto_sync') === '0') return;
-  if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => saveToCloud(true), 1500);
-}
-
-function saveAutoSyncPref() {
-  const on = document.getElementById('autoSync').checked;
-  localStorage.setItem('asset_auto_sync', on ? '1' : '0');
-}
-
-function setSyncBar(msg, type) {
-  const el = document.getElementById('syncBar');
-  el.textContent = msg;
-  el.className = type ? type : '';
-  if (!msg) el.style.display = 'none';
-}
-
-function formatNumber(n) {
-  if (isNaN(n)) n = 0;
-  return Math.round(n).toLocaleString('vi-VN');
-}
-
-function formatInput(n) {
-  if (!n && n !== 0) return '';
-  const num = parseNumber(n);
-  return num === 0 ? '0' : Math.round(num).toLocaleString('vi-VN');
-}
-
-function onInputFocus(el) {
-  el.value = parseNumber(el.value) || '';
-  el.select();
-}
-
-function onInputBlur(el) {
-  const num = parseNumber(el.value);
-  el.value = num === 0 ? '0' : Math.round(num).toLocaleString('vi-VN');
-}
-
-function parseNumber(str) {
-  if (typeof str === 'number') return str;
-  const cleaned = (str || '').toString().replace(/[^0-9.\-]/g, '');
-  const val = parseFloat(cleaned);
-  return isNaN(val) ? 0 : val;
-}
-
-function groupTotal(group) {
-  if (['funds', 'cash', 'loans'].includes(group.id)) {
-    return group.items.reduce((s, i) => s + (i.value || 0), 0);
-  }
-  return group.items.reduce((sum, item) => sum + (item.qty * item.value), 0);
-}
-
-function grandTotal() {
-  return data.groups.reduce((sum, g) => sum + groupTotal(g), 0);
-}
-
-function render() {
-  renderSummary();
-  renderChart();
-  renderGroups();
+// ===================== INIT & LOAD =====================
+function initApp(){
+  const stored=localStorage.getItem(STORAGE_KEY);
+  if(stored){data=JSON.parse(stored);migrateData();}
+  else{data={groups:[{id:'cash',name:'Tiền mặt',type:'cash',items:[],priceTime:null},{id:'stocks',name:'Chứng chỉ',type:'stocks',items:[],priceTime:null},{id:'crypto',name:'Tiền điện tử',type:'crypto',items:[],priceTime:null},{id:'gold',name:'Vàng',type:'gold',items:[],priceTime:null},{id:'realestate',name:'Bất động sản',type:'realestate',items:[],priceTime:null},{id:'loans',name:'Nợ',type:'loans',items:[],priceTime:null},{id:'funds',name:'Quỹ',type:'funds',items:[],priceTime:null}];saveData();}
+  const storedHistory=localStorage.getItem(HISTORY_KEY);
+  if(storedHistory){try{history=JSON.parse(storedHistory);}catch(e){history=[];}}
+  recordSnapshot();
+  document.getElementById('syncSubtitle').innerHTML='✅ Dữ liệu đã sẵn sàng';
+  render();
   renderHistorySelectOptions();
   renderHistoryChart();
-  renderLastUpdated();
+  document.getElementById('autoRefresh').checked=true;
+  toggleAutoRefresh();
 }
 
-function renderSummary() {
-  const total = grandTotal();
-  const el = document.getElementById('summary');
-  let html = `<div class="card total">
-    <div class="label">💰 Tổng tài sản</div>
-    <div class="value">${formatNumber(total)} ₫</div>
-  </div>`;
-  data.groups.forEach(g => {
-    const t = groupTotal(g);
-    const pct = total > 0 ? (t/total*100).toFixed(1) : '0.0';
-    // Rút gọn tên: bỏ emoji + chỉ lấy phần tên chính
-    const shortName = g.name.replace(/[\u{1F300}-\u{1FFFF}]|[\u2600-\u27FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/gu, '').trim();
-    html += `<div class="card">
-      <div class="label" title="${escapeHtml(g.name)}">${escapeHtml(shortName)}</div>
-      <div class="value">${formatNumber(t)} ₫</div>
-      <div class="pct">${pct}%</div>
-    </div>`;
+function migrateData(){
+  data.groups.forEach(g=>{
+    g.name=removeEmojis(g.name);
+    if(!g.type)g.type=g.id;
   });
-  el.innerHTML = html;
+  saveData();
 }
 
-function renderChart() {
-  const total = grandTotal();
-  const el = document.getElementById('chartWrap');
-  if (total <= 0) {
-    el.innerHTML = `<div style="color:var(--muted);text-align:center;width:100%;">Nhập số liệu để xem biểu đồ phân bổ tài sản</div>`;
-    return;
-  }
-  let cumulative = 0;
-  const size = 180, radius = 80, cx = 100, cy = 100;
-  let paths = '';
-  data.groups.forEach(g => {
-    const t = groupTotal(g);
-    if (t <= 0) return;
-    const fraction = t / total;
-    const startAngle = cumulative * 2 * Math.PI;
-    const endAngle = (cumulative + fraction) * 2 * Math.PI;
-    const x1 = cx + radius * Math.sin(startAngle);
-    const y1 = cy - radius * Math.cos(startAngle);
-    const x2 = cx + radius * Math.sin(endAngle);
-    const y2 = cy - radius * Math.cos(endAngle);
-    const largeArc = fraction > 0.5 ? 1 : 0;
-    if (fraction >= 0.9999) {
-      paths += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="${g.color}"/>`;
-    } else {
-      paths += `<path d="M${cx},${cy} L${x1},${y1} A${radius},${radius} 0 ${largeArc} 1 ${x2},${y2} Z" fill="${g.color}"/>`;
-    }
-    cumulative += fraction;
-  });
+function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));localStorage.setItem(HISTORY_KEY,JSON.stringify(history));}
+function recordSnapshot(){const date=new Date().toISOString().slice(0,10);const total=getTotal();if(!history.find(h=>h.date===date)){const groupTotals={};data.groups.forEach(g=>{groupTotals[g.id]=getGroupTotal(g);});history.push({date,total,groups:groupTotals});history=history.slice(-365);saveData();}}
 
-  let legend = '<div class="legend">';
-  data.groups.forEach(g => {
-    const t = groupTotal(g);
-    const pct = total > 0 ? (t/total*100).toFixed(1) : '0.0';
-    legend += `<div class="legend-item"><div class="legend-dot" style="background:${g.color}"></div><div>${escapeHtml(g.name.replace(/[\u{1F300}-\u{1FFFF}]|[\u2600-\u27FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDE4F]/gu, '').trim())}: <strong>${pct}%</strong></div></div>`;
-  });
-  legend += '</div>';
-
-  el.innerHTML = `
-    <svg width="${size}" height="${size}" viewBox="0 0 200 200">
-      <circle cx="${cx}" cy="${cy}" r="${radius}" fill="${data.groups.some(g=>groupTotal(g)>0) ? '#334155' : 'none'}"/>
-      ${paths}
-      <circle cx="${cx}" cy="${cy}" r="${radius*0.55}" fill="var(--card)"/>
-    </svg>
-    ${legend}
-  `;
+// ===================== GET VALUES =====================
+function getTotal(){return data.groups.reduce((s,g)=>s+getGroupTotal(g),0);}
+function getGroupTotal(g){
+  if(g.type==='cash'||g.type==='loans'||g.type==='funds'){return parseInt(g.total||0)||0;}
+  return g.items.reduce((s,i)=>{
+    if(g.type==='crypto'){const usd=parseFloat(i.priceUsd)||0;const qty=parseFloat(i.qty)||0;return s+usd*qty*24000;}
+    if(g.type==='gold'){const pricePerTael=(parseInt(i.value)||0)/10;const qty=parseInt(i.qty)||0;return s+pricePerTael*qty;}
+    const price=parseFloat(i.value)||0;const qty=parseInt(i.qty)||0;return s+price*qty;
+  },0);
 }
 
-function renderGroups() {
-  const el = document.getElementById('groups');
-  let html = '';
-  data.groups.forEach((g, gi) => {
-    const total = groupTotal(g);
-    const grand = grandTotal();
-    const pct = grand > 0 ? (total/grand*100).toFixed(1) : '0.0';
-    const refreshBtn = (g.id === 'crypto')
-      ? `<button class="btn btn-refresh" id="refresh-${g.id}" onclick="refreshCryptoPrices(${gi})">🔄 Cập nhật giá</button>`
-      : (g.id === 'stocks')
-        ? `<button class="btn btn-refresh" id="refresh-${g.id}" onclick="refreshStockPrices(${gi})">🔄 Cập nhật giá</button>`
-        : (g.id === 'gold')
-          ? `<button class="btn btn-refresh" id="refresh-${g.id}" onclick="refreshGoldPrices(${gi})">🔄 Cập nhật giá DOJI</button>`
-          : '';
+// ===================== RENDER =====================
+function render(){
+  // Render Summary
+  const total=getTotal();
+  let html='';
+  data.groups.forEach(g=>{
+    const gt=getGroupTotal(g);
+    const pct=total?((gt/total)*100).toFixed(1):'0.0';
+    html+=`<div class="card"><div class="label">${escHtml(g.name)}</div><div class="value">${formatNumber(gt)}</div><div class="label">${pct}%</div></div>`;
+  });
+  html+=`<div class="card total"><div class="label">Tổng Tài Sản</div><div class="value">${formatNumber(total)}</div></div>`;
+  document.getElementById('summary').innerHTML=html;
 
-    // Nhóm chỉ nhập tổng tiền: cash, loans, funds
-    if (['cash', 'loans', 'funds'].includes(g.id)) {
-      const label = g.id === 'funds' ? 'Tên quỹ' : 'Tên';
-      html += `<div class="group">
-        <div class="group-header">
-          <h2><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${g.color}"></span>
-            <input class="cell-input" style="font-weight:700;font-size:16px;width:auto;min-width:160px;" value="${escapeHtml(g.name)}" onchange="updateGroupName(${gi}, this.value)">
-          </h2>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span class="group-total">${formatNumber(total)} ₫</span>
-            <span class="group-pct">(${pct}%)</span>
-          </div>
-        </div>
-        <table><thead><tr>
-          <th style="font-weight:400">${label}</th>
-          <th style="text-align:right;font-weight:400">Tổng tiền (₫)</th>
-          <th></th>
-        </tr></thead><tbody>`;
-      g.items.forEach((item, ii) => {
-        html += `<tr>
-          <td><input class="cell-input" value="${escapeHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-          <td><input class="cell-input num" type="text" value="${formatInput(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>
-          <td class="actions-cell"><button class="btn btn-del" onclick="deleteItem(${gi},${ii})">✕</button></td>
-        </tr>`;
-      });
-      const addLabel = g.id === 'funds' ? '+ Thêm quỹ' : '+ Thêm';
-      html += `</tbody></table>
-        <div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">${addLabel}</button></div>
-      </div>`;
-      return;
-    }
+  // Render Groups
+  html='';
+  data.groups.forEach((g,gi)=>{html+=renderGroup(g,gi);});
+  document.getElementById('groups').innerHTML=html;
 
-    html += `<div class="group">
-      <div class="group-header">
-        <h2><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${g.color}"></span>
-          <input class="cell-input" style="font-weight:700;font-size:16px;width:auto;min-width:160px;" value="${escapeHtml(g.name)}" onchange="updateGroupName(${gi}, this.value)">
-        </h2>
-        <div style="display:flex;align-items:center;gap:10px;">
-          ${refreshBtn}
-          <span class="group-total">${formatNumber(total)} ₫</span>
-          <span class="group-pct">(${pct}%)</span>
-        </div>
-      </div>
-      ${g.priceTime ? `<div class="price-time" style="padding:0 18px 6px;">Giá cập nhật lúc: ${g.priceTime}</div>` : ''}
-      <table>
-        <thead><tr>
-          <th style="font-weight:400">Tên tài sản</th>
-          <th style="text-align:right;font-weight:400">Số lượng</th>
-          ${g.id === 'crypto' ? `<th style="text-align:right;font-weight:400;color:var(--yellow)">Giá (USD)</th>` : ''}
-          ${g.id === 'crypto' ? `<th style="text-align:right;font-weight:400;color:var(--yellow)">Thành tiền (USD)</th>` : `<th style="text-align:right;font-weight:400">Giá / Đơn vị (₫)</th>`}
-          <th style="text-align:right;font-weight:400">Thành tiền (₫)</th>
-          <th></th>
-        </tr></thead>
-        <tbody>`;
-    g.items.forEach((item,ii) => {
-      const rt=item.qty*item.value;
-      const isC = g.id === 'crypto';
-      html+=`<tr>
-        <td><input class="cell-input" value="${escapeHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-        <td><input class="cell-input num" type="text" value="${formatInput(item.qty)}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>
-        ${isC ? `<td><input class="cell-input num" type="text" value="${item.valueUsd||''}" placeholder="USD" onchange="updateItem(${gi},${ii},'valueUsd',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)" style="color:var(--yellow)"></td>` : ''}
-        ${isC ? `<td class="row-total" style="color:var(--yellow)">${item.valueUsd ? (item.qty * item.valueUsd).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—'}</td>` : `<td><input class="cell-input num" type="text" value="${formatInput(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="onInputFocus(this)" onblur="onInputBlur(this)"></td>`}
-        <td class="row-total">${formatNumber(rt)}</td>
-        <td class="actions-cell"><button class="btn btn-del" onclick="deleteItem(${gi},${ii})" title="Xóa">✕</button></td>
-      </tr>`;
+  // Apply number formatting
+  document.querySelectorAll('input.num').forEach(inp=>{formatNumberInput(inp);});
+}
+
+function renderGroup(g,gi){
+  const gt=getGroupTotal(g);const total=getTotal();const pct=total?((gt/total)*100).toFixed(1):'0.0';
+  let html=`<div class="group"><div class="group-header"><h2>${escHtml(g.name)}</h2><div><span class="group-total">${formatNumber(gt)}</span><span class="group-pct">${pct}%</span></div></div>`;
+  
+  if(g.type==='cash'||g.type==='loans'||g.type==='funds'){
+    html+=`<table><tr><th>Tổng tiền</th><th style="width:80px;">Thao tác</th></tr><tr><td><input class="cell-input num" type="text" value="${formatNumber(g.total||0).replace(' ₫','')}" onchange="data.groups[${gi}].total=parseInt(this.dataset.value)||0;saveData();render();recordSnapshot();"></td><td style="text-align:center;"><button class="btn-del" onclick="showDeleteModal(${gi})">🗑</button></td></tr></table>`;
+  }else if(g.type==='crypto'){
+    html+=`<table><tr><th>Tên</th><th style="text-align:right;">Số lượng</th><th style="text-align:right;">Giá USD</th><th style="text-align:right;">Thành tiền USD</th><th style="text-align:right;">VNĐ</th><th style="width:40px;">Thao tác</th></tr>`;
+    g.items.forEach((item,ii)=>{
+      const priceUsd=parseFloat(item.priceUsd)||0;const qty=parseFloat(item.qty)||0;const usdAmount=priceUsd*qty;const vnd=usdAmount*24000;
+      html+=`<tr><td><input class="cell-input" type="text" value="${escHtml(item.name)}" onchange="data.groups[${gi}].items[${ii}].name=this.value;saveData();render();"></td><td><input class="cell-input num" type="text" value="${qty}" style="text-align:right;" onchange="data.groups[${gi}].items[${ii}].qty=parseFloat(this.value)||0;saveData();render();recordSnapshot();"></td><td><input class="cell-input num" type="text" value="${priceUsd}" style="text-align:right;" onchange="data.groups[${gi}].items[${ii}].priceUsd=parseFloat(this.value)||0;saveData();render();recordSnapshot();"></td><td style="text-align:right;font-weight:600;">${formatNumber(usdAmount*24000)}</td><td style="text-align:right;color:var(--green);font-weight:600;">${formatNumber(vnd)}</td><td style="text-align:center;"><button class="btn-del" onclick="showDeleteModal(${gi},${ii})">🗑</button></td></tr>`;
     });
-    html += `</tbody></table>
-      <div class="add-row">
-        <button class="btn btn-add" onclick="addItem(${gi})">+ Thêm tài sản</button>
-      </div>
-    </div>`;
-  });
-  el.innerHTML = html;
-}
-
-function renderLastUpdated() {
-  const el = document.getElementById('lastUpdated');
-  el.textContent = data.lastUpdated ? `Cập nhật lần cuối: ${data.lastUpdated}` : '';
-}
-
-function updateFundsDirectValue(gi, val) {
-  data.groups[gi].directValue = parseNumber(val);
-  data.groups[gi].updatedAt = new Date().toLocaleString('vi-VN');
-  saveData(); render();
-}
-
-function updateItem(gi, ii, field, val) {
-  if (field === 'name') {
-    data.groups[gi].items[ii].name = val;
-  } else {
-    data.groups[gi].items[ii][field] = parseNumber(val);
-  }
-  saveData();
-  render();
-}
-
-function updateGroupName(gi, val) {
-  data.groups[gi].name = val;
-  saveData();
-  render();
-}
-
-function addItem(gi) {
-  data.groups[gi].items.push({ name: 'Tài sản mới', qty: 0, value: 0 });
-  saveData();
-  render();
-}
-
-function deleteItem(gi, ii) {
-  const name = data.groups[gi].items[ii].name || 'tài sản này';
-  if (!confirm(`Xóa "${name}"?`)) return;
-  data.groups[gi].items.splice(ii, 1);
-  saveData(); render();
-}
-
-function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `tai-san-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const imported = JSON.parse(e.target.result);
-      if (imported && Array.isArray(imported.groups)) {
-        data = imported;
-        saveData();
-        render();
-        alert('Nhập dữ liệu thành công!');
-      } else {
-        alert('File không hợp lệ.');
-      }
-    } catch (err) {
-      alert('Không thể đọc file: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-function resetData() {
-  if (!confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu và khôi phục về mặc định?')) return;
-  const pass = prompt('Nhập mật khẩu xác nhận để reset:');
-  if (pass === null) return;
-  if (pass !== 'Cuong321@') {
-    alert('Mật khẩu không đúng. Đã hủy reset.');
-    return;
-  }
-  data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-  saveData();
-  render();
-}
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-// ===== History chart =====
-let historyRange = 'all';
-
-function setHistoryRange(range) {
-  historyRange = range;
-  renderHistoryChart();
-}
-
-function manualSnapshot() {
-  recordSnapshot();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  renderHistoryChart();
-  alert('Đã lưu mốc tài sản cho hôm nay.');
-}
-
-function renderHistorySelectOptions() {
-  const sel = document.getElementById('historySelect');
-  const prev = sel.value || 'total';
-  let html = `<option value="total">📊 Tổng tài sản (tổng quát)</option>`;
-  data.groups.forEach(g => {
-    html += `<option value="${g.id}">${escapeHtml(g.name)}</option>`;
-  });
-  sel.innerHTML = html;
-  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
-}
-
-function renderHistoryChart() {
-  document.querySelectorAll('.hist-range').forEach(btn => {
-    const active = btn.dataset.range === historyRange;
-    btn.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
-    btn.style.color = active ? 'var(--accent)' : 'var(--muted)';
-    btn.style.background = active ? 'rgba(56,189,248,.08)' : '';
-  });
-
-  const wrap = document.getElementById('historyChartWrap');
-  let history = data.history.slice();
-
-  if (history.length === 0) {
-    wrap.innerHTML = `<div style="color:var(--muted);text-align:center;padding:30px 0;font-size:14px;">Chưa có dữ liệu lịch sử.<br><span style="font-size:12px;">Mỗi khi chỉnh sửa, mốc hôm nay tự động được lưu.</span></div>`;
-    return;
-  }
-
-  if (historyRange !== 'all') {
-    const days = parseInt(historyRange, 10);
-    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
-    const cutoffStr = cutoff.toISOString().slice(0, 10);
-    const filtered = history.filter(h => h.date >= cutoffStr);
-    history = filtered.length >= 2 ? filtered : history.slice(-Math.max(2, filtered.length || 2));
-  }
-
-  const sel = document.getElementById('historySelect').value || 'total';
-  const values = history.map(h => sel === 'total' ? h.total : (h.groups[sel] || 0));
-  const dates = history.map(h => h.date);
-
-  if (history.length === 1) {
-    wrap.innerHTML = `<div style="color:var(--muted);text-align:center;padding:30px 0;font-size:14px;">Chỉ có 1 mốc (${formatDate(dates[0])}): <strong style="color:var(--accent)">${formatNumber(values[0])} ₫</strong></div>`;
-    return;
-  }
-
-  const first = values[0], last = values[values.length-1];
-  const diff = last - first;
-  const pct = first !== 0 ? (diff/first*100) : 0;
-  const isUp = diff >= 0;
-  const cc = isUp ? 'var(--green)' : 'var(--red)';
-  const sign = isUp ? '+' : '';
-
-  // SVG chart
-  const W=680, H=220, pL=64, pR=16, pT=16, pB=32;
-  const minV=Math.min(...values), maxV=Math.max(...values), range=(maxV-minV)||1;
-  const plotW=W-pL-pR, plotH=H-pT-pB;
-  const pts=values.map((v,i)=>({
-    x: pL+(i/(values.length-1))*plotW,
-    y: pT+plotH-((v-minV)/range)*plotH,
-    v, date:dates[i]
-  }));
-  const line=pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
-  const area=line+` L${pts[pts.length-1].x.toFixed(1)},${pT+plotH} L${pts[0].x.toFixed(1)},${pT+plotH} Z`;
-
-  // grid (3 lines)
-  let grid='';
-  for(let i=0;i<=3;i++){
-    const y=pT+(plotH/3)*i, val=maxV-(range/3)*i;
-    grid+=`<line x1="${pL}" y1="${y.toFixed(1)}" x2="${W-pR}" y2="${y.toFixed(1)}" stroke="var(--border)" stroke-dasharray="3,3" stroke-width="1"/>`;
-    grid+=`<text x="${pL-8}" y="${(y+4).toFixed(1)}" text-anchor="end" font-size="10" fill="var(--muted)">${formatCompact(val)}</text>`;
-  }
-
-  // x labels
-  const lIdxs = values.length <= 6
-    ? pts.map((_,i)=>i)
-    : [0, Math.floor((pts.length-1)/3), Math.floor((pts.length-1)*2/3), pts.length-1];
-  let xl='';
-  lIdxs.forEach(i=>{xl+=`<text x="${pts[i].x.toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="10" fill="var(--muted)">${formatDate(pts[i].date)}</text>`;});
-
-  // dots — only if few points
-  let dotsHtml='';
-  if(pts.length<=30){
-    pts.forEach(p=>{dotsHtml+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="var(--accent)" stroke="var(--card)" stroke-width="1.5"><title>${formatDate(p.date)}: ${formatNumber(p.v)} ₫</title></circle>`;});
-  }
-
-  // stroke color based on trend
-  const lineColor = isUp ? '#22c55e' : '#ef4444';
-  const gradColor = isUp ? '#22c55e' : '#ef4444';
-
-  wrap.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">
-      <div style="background:var(--card2);border-radius:10px;padding:12px 14px;">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Hiện tại</div>
-        <div style="font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${formatNumber(last)} ₫</div>
-      </div>
-      <div style="background:var(--card2);border-radius:10px;padding:12px 14px;">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">Thay đổi</div>
-        <div style="font-size:17px;font-weight:700;color:${cc};white-space:nowrap;">${sign}${formatNumber(diff)} ₫</div>
-      </div>
-      <div style="background:var(--card2);border-radius:10px;padding:12px 14px;">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">% Thay đổi</div>
-        <div style="font-size:17px;font-weight:700;color:${cc};">${sign}${pct.toFixed(2)}%</div>
-      </div>
-    </div>
-    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
-      <defs>
-        <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="${gradColor}" stop-opacity="0.2"/>
-          <stop offset="100%" stop-color="${gradColor}" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      ${grid}
-      <path d="${area}" fill="url(#areaGrad)"/>
-      <path d="${line}" fill="none" stroke="${lineColor}" stroke-width="2" stroke-linejoin="round"/>
-      ${dotsHtml}
-      ${xl}
-    </svg>
-    <div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px;">${formatDate(dates[0])} → ${formatDate(dates[dates.length-1])}</div>
-  `;
-}
-
-function formatDate(d) {
-  const [y, m, dd] = d.split('-');
-  return `${dd}/${m}/${y.slice(2)}`;
-}
-
-function formatCompact(n) {
-  const abs = Math.abs(n);
-  if (abs >= 1e9) return (n/1e9).toFixed(1) + 'B';
-  if (abs >= 1e6) return (n/1e6).toFixed(1) + 'M';
-  if (abs >= 1e3) return (n/1e3).toFixed(0) + 'K';
-  return n.toFixed(0);
-}
-
-async function refreshAllPrices() {
-  const btn = document.getElementById('refreshAllBtn');
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spin">🔄</span> Đang cập nhật...';
-  btn.disabled = true;
-  const tasks = [];
-  data.groups.forEach((g, gi) => {
-    if (g.id === 'crypto') tasks.push(refreshCryptoPrices(gi));
-    if (g.id === 'stocks') tasks.push(refreshStockPrices(gi));
-    if (g.id === 'gold')   tasks.push(refreshGoldPrices(gi));
-  });
-  await Promise.allSettled(tasks);
-  btn.innerHTML = orig;
-  btn.disabled = false;
-}
-
-// ===== Live price fetching =====
-const CRYPTO_MAP = {
-  BTC: 'bitcoin', ETH: 'ethereum', SOL: 'solana', BNB: 'binancecoin',
-  XRP: 'ripple', ADA: 'cardano', DOGE: 'dogecoin', DOT: 'polkadot',
-  AVAX: 'avalanche-2', MATIC: 'matic-network', LTC: 'litecoin',
-  LINK: 'chainlink', TRX: 'tron', USDT: 'tether', USDC: 'usd-coin',
-  TON: 'the-open-network', SHIB: 'shiba-inu', ATOM: 'cosmos', NEAR: 'near'
-};
-
-function extractSymbol(name) {
-  const tokens = (name || '').toUpperCase().match(/[A-Z0-9]+/g) || [];
-  for (const t of tokens) {
-    if (CRYPTO_MAP[t]) return t;
-  }
-  return null;
-}
-
-async function refreshCryptoPrices(gi) {
-  const btn = document.getElementById(`refresh-${data.groups[gi].id}`);
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spin">🔄</span> Đang tải...';
-  btn.disabled = true;
-  try {
-    const group = data.groups[gi];
-    const ids = new Set();
-    group.items.forEach(item => {
-      const sym = extractSymbol(item.name);
-      if (sym) ids.add(CRYPTO_MAP[sym]);
+    html+=`</table><div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">+ Thêm</button>`;
+    html+=`<button class="btn-refresh" id="refresh-${g.id}" onclick="refreshCryptoPrices(${gi})">🔄 Cập nhật</button></div>`;
+  }else{
+    html+=`<table><tr><th>Tên</th><th style="text-align:right;">Số lượng</th><th style="text-align:right;">Giá</th><th style="text-align:right;">Thành tiền</th><th style="width:40px;">Thao tác</th></tr>`;
+    g.items.forEach((item,ii)=>{
+      const price=parseFloat(item.value)||0;const qty=parseInt(item.qty)||0;const amount=g.type==='gold'?(price/10)*qty:price*qty;
+      html+=`<tr><td><input class="cell-input" type="text" value="${escHtml(item.name)}" onchange="data.groups[${gi}].items[${ii}].name=this.value;saveData();render();"></td><td><input class="cell-input num" type="text" value="${qty}" style="text-align:right;" onchange="data.groups[${gi}].items[${ii}].qty=parseInt(this.value)||0;saveData();render();recordSnapshot();"></td><td><input class="cell-input num" type="text" value="${formatNumber(price).replace(' ₫','')}" style="text-align:right;" onchange="data.groups[${gi}].items[${ii}].value=parseInt(this.dataset.value)||0;saveData();render();recordSnapshot();"></td><td style="text-align:right;" class="row-total">${formatNumber(amount)}</td><td style="text-align:center;"><button class="btn-del" onclick="showDeleteModal(${gi},${ii})">🗑</button></td></tr>`;
     });
-    if (ids.size === 0) {
-      alert('Không nhận diện được mã coin nào trong tên tài sản. Hãy đặt tên chứa ký hiệu như BTC, SOL, ETH...');
-      return;
-    }
-    const idList = Array.from(ids).join(',');
-    const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${idList}&vs_currencies=vnd,usd`);
-    if (!res.ok) throw new Error('Lỗi kết nối CoinGecko');
-    const prices = await res.json();
-    let updated = 0;
-    group.items.forEach(item => {
-      const sym = extractSymbol(item.name);
-      if (sym && prices[CRYPTO_MAP[sym]]) {
-        item.value = prices[CRYPTO_MAP[sym]].vnd;
-        item.valueUsd = prices[CRYPTO_MAP[sym]].usd;
-        updated++;
-      }
-    });
-    group.priceTime = new Date().toLocaleString('vi-VN');
-    saveData();
-    render();
-    if (updated === 0) alert('Không cập nhật được giá nào.');
-  } catch (err) {
-    alert('Lỗi khi lấy giá crypto: ' + err.message);
-  } finally {
-    if (btn) { btn.innerHTML = orig; btn.disabled = false; }
+    html+=`</table><div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">+ Thêm</button>`;
+    if(g.type==='gold')html+=`<button class="btn-refresh" id="refresh-${g.id}" onclick="refreshGoldPrices(${gi})">🔄 Cập nhật DOJI/SJC</button>`;
+    if(g.type==='stocks')html+=`<button class="btn-refresh" id="refresh-${g.id}" onclick="refreshStockPrices(${gi})">🔄 Cập nhật</button>`;
+    html+=`</div>`;
   }
+  if(g.priceTime)html+=`<div class="price-time">Cập nhật: ${g.priceTime}</div>`;
+  html+=`</div>`;
+  return html;
 }
 
-async function refreshStockPrices(gi) {
-  const btn = document.getElementById(`refresh-${data.groups[gi].id}`);
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spin">🔄</span> Đang tải...';
-  btn.disabled = true;
-  try {
-    const group = data.groups[gi];
-    let updated = 0, failed = [];
-    for (const item of group.items) {
-      const tokens = (item.name || '').toUpperCase().match(/[A-Z]{3}/g) || [];
-      const code = tokens[0];
-      if (!code) continue;
-      try {
-        const to = Math.floor(Date.now() / 1000);
-        const from = to - 7 * 24 * 3600;
-        const url = `https://dchart-api.vndirect.com.vn/dchart/history?resolution=D&symbol=${code}&from=${from}&to=${to}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const json = await res.json();
-        if (json && json.c && json.c.length) {
-          const lastClose = json.c[json.c.length - 1];
-          item.value = Math.round(lastClose * 1000); // VNDirect trả giá theo nghìn đồng
-          updated++;
-        } else {
-          failed.push(code);
-        }
-      } catch (e) {
-        failed.push(code);
-      }
-    }
-    group.priceTime = new Date().toLocaleString('vi-VN');
-    saveData();
-    render();
-    if (updated === 0) {
-      alert('Không lấy được giá cổ phiếu (có thể do trình duyệt chặn CORS với file local). Bạn có thể: 1) Mở file qua một local server, hoặc 2) Nhập giá thủ công.');
-    } else if (failed.length) {
-      alert(`Đã cập nhật ${updated} mã. Không lấy được giá cho: ${failed.join(', ')}`);
-    }
-  } catch (err) {
-    alert('Lỗi khi lấy giá cổ phiếu: ' + err.message);
-  } finally {
-    if (btn) { btn.innerHTML = orig; btn.disabled = false; }
-  }
+function addItem(gi){const item={name:'Mục mới',qty:1,value:0,priceUsd:0};data.groups[gi].items.push(item);saveData();render();recordSnapshot();}
+
+// ===================== DELETE WITH CONFIRMATION =====================
+function showDeleteModal(gi,ii){
+  const g=data.groups[gi];
+  let msg='';
+  if(ii!==undefined){const item=g.items[ii];msg=`Bạn có chắc muốn xóa "${escHtml(item.name)}" không?`;deleteItem={gi,ii};}
+  else{msg=`Bạn có chắc muốn xóa nhóm "${escHtml(g.name)}" không?`;deleteItem={gi};}
+  document.getElementById('deleteMessage').innerHTML=msg;
+  document.getElementById('deleteModal').classList.add('show');
+}
+function cancelDelete(){document.getElementById('deleteModal').classList.remove('show');deleteItem=null;}
+function confirmDelete(){
+  if(!deleteItem)return;
+  const {gi,ii}=deleteItem;
+  if(ii!==undefined){data.groups[gi].items.splice(ii,1);}else{data.groups.splice(gi,1);}
+  saveData();render();recordSnapshot();cancelDelete();
 }
 
-async function refreshGoldPrices(gi) {
-  const btn = document.getElementById(`refresh-${data.groups[gi].id}`);
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spin">🔄</span> Đang tải...';
-  btn.disabled = true;
-  const sources = [
-    async () => {
-      // DOJI public API
-      const res = await fetch('https://giavang.doji.vn/api/v3/gold-price/group/g-tphcm');
-      if (!res.ok) throw new Error('DOJI HTTP ' + res.status);
-      const json = await res.json();
-      const list = json?.data?.data || json?.data || json;
-      if (!Array.isArray(list)) throw new Error('DOJI: dữ liệu không hợp lệ');
-      const ring = list.find(it => {
-        const n = (it.Name || it.name || '').toUpperCase();
-        return n.includes('NHẪN') || n.includes('NHAN') || n.includes('9999');
-      });
-      if (!ring) throw new Error('DOJI: không tìm thấy vàng nhẫn 9999');
-      const buyRaw = ring.Buy ?? ring.buy ?? ring.BuyPrice;
-      if (!buyRaw) throw new Error('DOJI: không có giá mua');
-      // DOJI trả giá theo lượng (cây), chia 10 để ra giá/chỉ
-      const pricePerLuong = buyRaw < 1000000 ? buyRaw * 1000 : buyRaw;
-      return Math.round(pricePerLuong / 10);
+// ===================== PRICES =====================
+async function updateAllPrices(){
+  const btn=document.querySelector('.btn-update-all');
+  const orig=btn.innerHTML;btn.innerHTML='<span class="spin">🔄</span> Đang tải...';btn.disabled=true;
+  try{
+    for(let i=0;i<data.groups.length;i++){
+      const g=data.groups[i];
+      if(g.type==='crypto')await new Promise(r=>setTimeout(()=>{refreshCryptoPrices(i);r();},500));
+      else if(g.type==='gold')await new Promise(r=>setTimeout(()=>{refreshGoldPrices(i);r();},500));
+      else if(g.type==='stocks')await new Promise(r=>setTimeout(()=>{refreshStockPrices(i);r();},500));
+    }
+  }finally{btn.innerHTML=orig;btn.disabled=false;}
+}
+
+async function refreshCryptoPrices(gi){
+  const btn=document.getElementById(`refresh-crypto`);
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='<span class="spin">🔄</span> Đang tải...';btn.disabled=true;}
+  const g=data.groups[gi];let updated=0,failed=[];
+  try{
+    for(const item of g.items){
+      const code=item.name.toUpperCase().replace(/\s/g,'');
+      try{
+        const r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${code}&vs_currencies=usd`,{headers:{'Accept':'application/json'}});
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const j=await r.json();const p=j[code]?.usd;
+        if(p){item.priceUsd=p;updated++;}else failed.push(code);
+      }catch(e){failed.push(code);}
+    }
+    g.priceTime=new Date().toLocaleString('vi-VN');
+    saveData();render();recordSnapshot();
+    if(!updated&&failed.length)alert(`Không lấy được giá: ${failed.join(', ')}`);
+  }catch(e){alert('Lỗi crypto: '+e.message);}
+  finally{if(btn){btn.innerHTML=orig;btn.disabled=false;}}
+}
+
+async function refreshStockPrices(gi){
+  const btn=document.getElementById(`refresh-stocks`);
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='<span class="spin">🔄</span> Đang tải...';btn.disabled=true;}
+  const g=data.groups[gi];let updated=0,failed=[];
+  try{
+    for(const item of g.items){
+      const code=item.name.toUpperCase();
+      try{
+        const r=await fetch(`https://quote.vietstock.vn/api/QuoteService/GetQuotes?symbols=${code}&fields=basic,price,rating`,{mode:'no-cors'});
+        if(!r.ok)throw new Error('HTTP '+r.status);
+      }catch(e){failed.push(code);}
+    }
+    g.priceTime=new Date().toLocaleString('vi-VN');
+    saveData();render();recordSnapshot();
+  }catch(e){alert('Lỗi giá cổ phiếu: '+e.message);}
+  finally{if(btn){btn.innerHTML=orig;btn.disabled=false;}}
+}
+
+async function refreshGoldPrices(gi){
+  const btn=document.getElementById(`refresh-gold`);
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='<span class="spin">🔄</span> Đang tải...';btn.disabled=true;}
+  const g=data.groups[gi];
+  const sources=[
+    async()=>{
+      const r=await fetch('https://giavang.doji.vn/api/v3/gold-price/group/g-tphcm');
+      if(!r.ok)throw new Error('DOJI HTTP '+r.status);
+      const j=await r.json();const list=j?.data?.data||j?.data||j;
+      if(!Array.isArray(list))throw new Error('DOJI: dữ liệu không hợp lệ');
+      const ring=list.find(it=>{const n=(it.Name||it.name||'').toUpperCase();return n.includes('NHẪN')||n.includes('NHAN')||n.includes('9999');});
+      if(!ring)throw new Error('DOJI: không tìm thấy vàng nhẫn 9999');
+      const buy=ring.Buy??ring.buy??ring.BuyPrice;if(!buy)throw new Error('DOJI: không có giá mua');
+      return buy<1000000?Math.round(buy*1000):Math.round(buy);
     },
-    async () => {
-      // SJC public API (fallback)
-      const res = await fetch('https://sjc.com.vn/GoldPrice/Services/PriceService.ashx');
-      if (!res.ok) throw new Error('SJC HTTP ' + res.status);
-      const json = await res.json();
-      const list = json?.data || json;
-      if (!Array.isArray(list)) throw new Error('SJC: dữ liệu không hợp lệ');
-      const ring = list.find(it => {
-        const n = (it.TypeName || it.Name || it.name || '').toUpperCase();
-        return n.includes('NHẪN') || n.includes('NHAN');
-      });
-      if (!ring) throw new Error('SJC: không tìm thấy vàng nhẫn');
-      const buyRawSJC = ring.BuyValue ?? ring.Buy ?? ring.buy;
-      if (!buyRawSJC) throw new Error('SJC: không có giá mua');
-      // SJC trả giá theo lượng (cây), chia 10 để ra giá/chỉ
-      const pricePerLuongSJC = buyRawSJC < 1000000 ? buyRawSJC * 1000 : buyRawSJC;
-      return Math.round(pricePerLuongSJC / 10);
+    async()=>{
+      const r=await fetch('https://sjc.com.vn/GoldPrice/Services/PriceService.ashx');
+      if(!r.ok)throw new Error('SJC HTTP '+r.status);
+      const j=await r.json();const list=j?.data||j;
+      if(!Array.isArray(list))throw new Error('SJC: dữ liệu không hợp lệ');
+      const ring=list.find(it=>{const n=(it.TypeName||it.Name||it.name||'').toUpperCase();return n.includes('NHẪN')||n.includes('NHAN');});
+      if(!ring)throw new Error('SJC: không tìm thấy vàng nhẫn');
+      const buy=ring.BuyValue??ring.Buy??ring.buy;if(!buy)throw new Error('SJC: không có giá mua');
+      return buy<1000000?Math.round(buy*1000):Math.round(buy);
     }
   ];
-
-  let sellPrice = null, errors = [];
-  for (const src of sources) {
-    try {
-      sellPrice = await src();
-      if (sellPrice) break;
-    } catch (e) {
-      errors.push(e.message);
-    }
-  }
-
-  try {
-    if (!sellPrice) throw new Error(errors.join(' | '));
-    const group = data.groups[gi];
-    let updated = 0;
-    group.items.forEach(item => {
-      const n = item.name.toUpperCase();
-      if (n.includes('NHẪN') || n.includes('NHAN') || n.includes('9999')) {
-        item.value = sellPrice;
-        updated++;
-      }
-    });
-    group.priceTime = new Date().toLocaleString('vi-VN');
-    saveData();
-    render();
-    if (updated === 0) alert('Không có tài sản nào tên chứa "Vàng nhẫn"/"9999" để cập nhật.');
-  } catch (err) {
-    alert('Không lấy được giá vàng (SJC/DOJI đều lỗi, có thể do CORS khi mở file local). Hãy mở file qua local server, hoặc nhập giá thủ công. Chi tiết: ' + err.message);
-  } finally {
-    if (btn) { btn.innerHTML = orig; btn.disabled = false; }
-  }
+  let price=null,errors=[];
+  for(const src of sources){try{price=await src();if(price)break;}catch(e){errors.push(e.message);}}
+  try{
+    if(!price)throw new Error(errors.join(' | '));
+    let updated=0;
+    g.items.forEach(i=>{const n=i.name.toUpperCase();if(n.includes('NHẪN')||n.includes('NHAN')||n.includes('9999')){i.value=price;updated++;}});
+    g.priceTime=new Date().toLocaleString('vi-VN');
+    saveData();render();recordSnapshot();
+    if(!updated)alert('Không có tài sản nào tên chứa "Vàng nhẫn"/"9999" để cập nhật.');
+  }catch(e){alert('Không lấy được giá vàng: '+e.message);}
+  finally{if(btn){btn.innerHTML=orig;btn.disabled=false;}}
 }
 
-let autoRefreshTimer = null;
-function toggleAutoRefresh() {
-  const checked = document.getElementById('autoRefresh').checked;
-  if (checked) {
-    const cryptoIdx = data.groups.findIndex(g => g.id === 'crypto');
-    if (cryptoIdx >= 0) refreshCryptoPrices(cryptoIdx);
-    autoRefreshTimer = setInterval(() => {
-      const idx = data.groups.findIndex(g => g.id === 'crypto');
-      if (idx >= 0) refreshCryptoPrices(idx);
-    }, 30000);
-  } else {
-    if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-    autoRefreshTimer = null;
-  }
+// ===================== AUTO REFRESH CRYPTO =====================
+let autoRefreshTimer=null;
+function toggleAutoRefresh(){
+  const checked=document.getElementById('autoRefresh')?.checked;
+  if(checked){
+    const ci=data.groups.findIndex(g=>g.id==='crypto');
+    if(ci>=0)refreshCryptoPrices(ci);
+    autoRefreshTimer=setInterval(()=>{const i=data.groups.findIndex(g=>g.id==='crypto');if(i>=0)refreshCryptoPrices(i);},30000);
+  }else{if(autoRefreshTimer)clearInterval(autoRefreshTimer);autoRefreshTimer=null;}
 }
 
-if (data.history.length === 0) {
-  recordSnapshot();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+// ===================== HISTORY CHART =====================
+let historyRange='all';
+function setHistoryRange(r){historyRange=r;renderHistoryChart();}
+function manualSnapshot(){recordSnapshot();localStorage.setItem(STORAGE_KEY,JSON.stringify(data));renderHistoryChart();alert('Đã lưu mốc tài sản cho hôm nay.');}
+
+function renderHistorySelectOptions(){
+  const sel=document.getElementById('historySelect');
+  const prev=sel.value||'total';
+  let html=`<option value="total">Tổng tài sản (tổng quát)</option>`;
+  data.groups.forEach(g=>{html+=`<option value="${g.id}">${escHtml(g.name)}</option>`;});
+  sel.innerHTML=html;
+  if([...sel.options].some(o=>o.value===prev))sel.value=prev;
 }
-render();
-// Tự động bật cập nhật giá Crypto ngay khi mở
-toggleAutoRefresh();
+
+function renderHistoryChart(){
+  document.querySelectorAll('#historySection [data-range]').forEach(btn=>{
+    btn.style.borderColor=btn.dataset.range===historyRange?'var(--accent)':'var(--border)';
+    btn.style.color=btn.dataset.range===historyRange?'var(--accent)':'var(--text)';
+  });
+  const wrap=document.getElementById('historyChartWrap');
+  const statWrap=document.getElementById('statCardsWrap');
+  let history=data.history.slice();
+  if(!history.length){wrap.innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px 0;">Chưa có dữ liệu lịch sử.</div>`;statWrap.innerHTML='';return;}
+  if(historyRange!=='all'){
+    const days=parseInt(historyRange,10);
+    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+    const cs=cutoff.toISOString().slice(0,10);
+    const f=history.filter(h=>h.date>=cs);
+    history=f.length>=2?f:history.slice(-Math.max(2,f.length||2));
+  }
+  const sel=document.getElementById('historySelect').value||'total';
+  const values=history.map(h=>sel==='total'?h.total:(h.groups[sel]||0));
+  const dates=history.map(h=>h.date);
+  if(history.length===1){
+    wrap.innerHTML=`<div style="color:var(--muted);text-align:center;padding:20px 0;">Chỉ có 1 mốc dữ liệu: <strong style="color:var(--accent)">${formatNumber(values[0])}</strong></div>`;statWrap.innerHTML='';return;
+  }
+  const diff=values[values.length-1]-values[0];
+  const pct=values[0]?diff/values[0]*100:0;
+  const minV=Math.min(...values);
+  const maxV=Math.max(...values);
+  const avgV=values.reduce((a,b)=>a+b,0)/values.length;
+  
+  // Stat Cards
+  const cc=diff>=0?'var(--green)':'var(--red)';
+  const cs2=diff>=0?'+':'';
+  statWrap.innerHTML=`
+    <div class="stat-cards">
+      <div class="stat-card"><div class="label">Thấp nhất</div><div class="value" style="color:var(--red);">${formatNumber(minV)}</div></div>
+      <div class="stat-card"><div class="label">Cao nhất</div><div class="value" style="color:var(--green);">${formatNumber(maxV)}</div></div>
+      <div class="stat-card"><div class="label">Thay đổi</div><div class="value" style="color:${cc};">${cs2}${formatNumber(diff)} (${cs2}${pct.toFixed(1)}%)</div></div>
+    </div>
+  `;
+
+  // Chart
+  const W=700,H=260,pL=60,pR=20,pT=20,pB=36;
+  const range=(maxV-minV)||1;
+  const plotW=W-pL-pR,plotH=H-pT-pB;
+  const pts=values.map((v,i)=>({x:pL+(i/(values.length-1))*plotW,y:pT+plotH-((v-minV)/range)*plotH,v,date:dates[i]}));
+  const lineColor=diff>=0?'var(--green)':'var(--red)';
+  const line=pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ');
+  const area=line+` L${pts[pts.length-1].x.toFixed(1)},${pT+plotH} L${pts[0].x.toFixed(1)},${pT+plotH} Z`;
+  let grid='';
+  for(let i=0;i<=4;i++){const y=pT+(plotH/4)*i,val=maxV-(range/4)*i;grid+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="var(--border)" stroke-width="1"/><text x="${pL-8}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmtCompact(val)}</text>`;}
+  const li2=[0,Math.floor((pts.length-1)/2),pts.length-1];
+  let xl='';li2.forEach(i=>{xl+=`<text x="${pts[i].x.toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)">${fmtDate(pts[i].date)}</text>`;});
+  let dots='';pts.forEach(p=>{dots+=`<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${lineColor}"><title>${fmtDate(p.date)}: ${formatNumber(p.v)}</title></circle>`;});
+  wrap.innerHTML=`
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+      <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${lineColor}" stop-opacity="0.25"/><stop offset="100%" stop-color="${lineColor}" stop-opacity="0"/></linearGradient></defs>
+      ${grid}<path d="${area}" fill="url(#ag)"/><path d="${line}" fill="none" stroke="${lineColor}" stroke-width="2.5"/>${dots}${xl}
+    </svg>`;
+}
+
+function fmtDate(d){const[y,m,dd]=d.split('-');return`${dd}/${m}/${y.slice(2)}`;}
+function fmtCompact(n){const a=Math.abs(n);if(a>=1e9)return(n/1e9).toFixed(1)+'B';if(a>=1e6)return(n/1e6).toFixed(1)+'M';if(a>=1e3)return(n/1e3).toFixed(0)+'K';return n.toFixed(0);}
+function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+// ===================== IMPORT/EXPORT =====================
+function exportData(){const a=document.createElement('a');a.href='data:text/json;base64,'+btoa(JSON.stringify(data));a.download='wealth-'+new Date().toISOString().slice(0,10)+'.json';a.click();}
+function importData(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result);if(j.groups){data=j;saveData();render();renderHistorySelectOptions();renderHistoryChart();alert('Nhập dữ liệu thành công!');}else alert('File không hợp lệ.');}catch(x){alert('Lỗi: '+x.message);}};r.readAsText(f);}
+
+// ===================== LOGIN =====================
+function doLogin(){
+  const pwd=document.getElementById('pwdInput').value;
+  if(pwd===''){document.getElementById('loginError').innerHTML='Mật khẩu không được để trống!';return;}
+  if(pwd.length<4){document.getElementById('loginError').innerHTML='Mật khẩu phải có ít nhất 4 ký tự!';return;}
+  sessionStorage.setItem(SESSION_KEY,'1');
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+  initApp();
+}
 
 // ===================== BOOT =====================
-if (sessionStorage.getItem(SESSION_KEY) === '1') {
+if(sessionStorage.getItem(SESSION_KEY)==='1'){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('mainApp').style.display='block';
   initApp();
