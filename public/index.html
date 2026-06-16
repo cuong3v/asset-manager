@@ -102,6 +102,11 @@
 
     <div id="syncBar"></div>
     <div class="summary" id="summary"></div>
+    <div style="text-align:center; margin-bottom:24px;">
+      <button class="btn btn-add" id="updateAllPricesBtn" onclick="updateAllPrices()" style="padding:10px 20px; font-size:14px;">
+        🔄 Cập nhật giá tất cả tài sản
+      </button>
+    </div>
     <div class="chart-wrap" id="chartWrap"></div>
     <div id="groups"></div>
 
@@ -137,11 +142,46 @@
   </div>
 </div>
 
+<!-- CONFIRMATION MODAL -->
+<div id="confirmModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:24px; max-width:400px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.3);">
+    <h3 style="margin-bottom:12px; font-size:18px;">🗑 Xác nhận xóa</h3>
+    <p id="confirmText" style="color:var(--muted); margin-bottom:24px; font-size:14px;"></p>
+    <div style="display:flex; gap:12px; justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeConfirmModal()" style="flex:1;">Hủy</button>
+      <button class="btn" id="deleteConfirmBtn" onclick="confirmDelete()" style="flex:1; background:var(--red); color:white;">Xóa</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ===================== CONFIG =====================
 const APP_PASSWORD = 'Cuong321@'; // đổi nếu muốn
 const STORAGE_KEY = 'asset_manager_data_v1';
 const SESSION_KEY = 'asset_manager_session';
+
+// ===================== MODAL CONFIRMATION =====================
+let pendingDelete={gi:null,ii:null};
+function showConfirmModal(name,gi,ii){
+  pendingDelete={gi,ii};
+  document.getElementById('confirmText').textContent=`Bạn có chắc chắn muốn xóa "${name}" không?`;
+  document.getElementById('confirmModal').style.display='flex';
+}
+function closeConfirmModal(){
+  document.getElementById('confirmModal').style.display='none';
+  pendingDelete={gi:null,ii:null};
+}
+function confirmDelete(){
+  if(pendingDelete.gi!==null&&pendingDelete.ii!==null){
+    data.groups[pendingDelete.gi].items.splice(pendingDelete.ii,1);
+    saveData();render();
+    closeConfirmModal();
+  }
+}
+document.addEventListener('click',function(e){
+  const modal=document.getElementById('confirmModal');
+  if(e.target===modal)closeConfirmModal();
+});
 
 // ===================== DEFAULT DATA =====================
 const DEFAULT_DATA = {
@@ -373,7 +413,7 @@ function renderGroups() {
         <td><input class="cell-input num" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
         <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
         <td class="row-total">${formatNumber(rt)}</td>
-        <td class="actions-cell"><button class="btn btn-del" onclick="deleteItem(${gi},${ii})">✕</button></td>
+        <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
       </tr>`;
     });
     html+=`</tbody></table><div class="add-row"><button class="btn btn-add" onclick="addItem(${gi})">+ Thêm tài sản</button></div></div>`;
@@ -392,7 +432,6 @@ function updateItem(gi,ii,field,val) {
 }
 function updateGroupName(gi,val) { data.groups[gi].name=val; saveData(); render(); }
 function addItem(gi)       { data.groups[gi].items.push({name:'Tài sản mới',qty:0,value:0}); saveData(); render(); }
-function deleteItem(gi,ii) { data.groups[gi].items.splice(ii,1); saveData(); render(); }
 
 // ===================== EXPORT / IMPORT / RESET =====================
 function exportData() {
@@ -502,6 +541,23 @@ async function refreshGoldPrices(gi){
     saveData(); render(); if(!updated)alert('Không có tài sản nào tên chứa "Vàng nhẫn"/"9999" để cập nhật.');
   }catch(e){alert('Không lấy được giá vàng: '+e.message);}
   finally{if(btn){btn.innerHTML=orig;btn.disabled=false;}}
+}
+
+// ===================== UPDATE ALL PRICES =====================
+async function updateAllPrices(){
+  const btn=document.getElementById('updateAllPricesBtn');
+  const orig=btn.innerHTML; btn.innerHTML='<span class="spin">🔄</span> Đang cập nhật...'; btn.disabled=true;
+  let cryptoIdx=-1, goldIdx=-1;
+  
+  for(let i=0;i<data.groups.length;i++){
+    if(data.groups[i].id==='crypto')cryptoIdx=i;
+    if(data.groups[i].id==='gold')goldIdx=i;
+  }
+  
+  if(cryptoIdx>=0){await refreshCryptoPrices(cryptoIdx);}
+  if(goldIdx>=0){await refreshGoldPrices(goldIdx);}
+  
+  if(btn){btn.innerHTML=orig;btn.disabled=false;}
 }
 
 // ===================== AUTO REFRESH CRYPTO =====================
