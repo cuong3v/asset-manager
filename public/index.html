@@ -442,7 +442,7 @@ function renderGroups() {
       }else{
         html+=`<tr>
           <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-          <td><input class="cell-input num" value="${formatNumber(item.qty)}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
+          <td><input class="cell-input num" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()" step="0.01"></td>
           <td><input class="cell-input num" value="${formatNumber(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
           <td class="row-total">${formatNumber(rt)}</td>
           <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
