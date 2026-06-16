@@ -183,6 +183,23 @@ document.addEventListener('click',function(e){
   if(e.target===modal)closeConfirmModal();
 });
 
+// ===================== UPDATE ALL PRICES =====================
+async function updateAllPrices(){
+  const btn=document.getElementById('updateAllPricesBtn');
+  const orig=btn.innerHTML; btn.innerHTML='<span class="spin">🔄</span> Đang cập nhật...'; btn.disabled=true;
+  let cryptoIdx=-1, goldIdx=-1;
+  
+  for(let i=0;i<data.groups.length;i++){
+    if(data.groups[i].id==='crypto')cryptoIdx=i;
+    if(data.groups[i].id==='gold')goldIdx=i;
+  }
+  
+  if(cryptoIdx>=0){await refreshCryptoPrices(cryptoIdx);}
+  if(goldIdx>=0){await refreshGoldPrices(goldIdx);}
+  
+  if(btn){btn.innerHTML=orig;btn.disabled=false;}
+}
+
 // ===================== DEFAULT DATA =====================
 const DEFAULT_DATA = {
   groups: [
@@ -343,7 +360,7 @@ function render() {
 }
 
 function formatNumber(n) { return isNaN(n)?'0':Math.round(n).toLocaleString('vi-VN'); }
-function parseNumber(s)  { const v=parseFloat((s||'').toString().replace(/[^0-9.\-]/g,'')); return isNaN(v)?0:v; }
+function parseNumber(s)  { const v=parseFloat((s||'').toString().replace(/\./g,'').replace(/[^0-9\-]/g,'')); return isNaN(v)?0:v; }
 
 function renderSummary() {
   const total = grandTotal();
@@ -419,14 +436,14 @@ function renderGroups() {
       if(isSimple){
         html+=`<tr>
           <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-          <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()" style="text-align:right;"></td>
+          <td><input class="cell-input num" value="${formatNumber(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()" style="text-align:right;"></td>
           <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
         </tr>`;
       }else{
         html+=`<tr>
           <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
-          <td><input class="cell-input num" value="${item.qty}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
-          <td><input class="cell-input num" value="${item.value}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
+          <td><input class="cell-input num" value="${formatNumber(item.qty)}" onchange="updateItem(${gi},${ii},'qty',this.value)" onfocus="this.select()"></td>
+          <td><input class="cell-input num" value="${formatNumber(item.value)}" onchange="updateItem(${gi},${ii},'value',this.value)" onfocus="this.select()"></td>
           <td class="row-total">${formatNumber(rt)}</td>
           <td class="actions-cell"><button class="btn btn-del" onclick="showConfirmModal('${escHtml(item.name)}',${gi},${ii})">✕</button></td>
         </tr>`;
@@ -557,23 +574,6 @@ async function refreshGoldPrices(gi){
     saveData(); render(); if(!updated)alert('Không có tài sản nào tên chứa "Vàng nhẫn"/"9999" để cập nhật.');
   }catch(e){alert('Không lấy được giá vàng: '+e.message);}
   finally{if(btn){btn.innerHTML=orig;btn.disabled=false;}}
-}
-
-// ===================== UPDATE ALL PRICES =====================
-async function updateAllPrices(){
-  const btn=document.getElementById('updateAllPricesBtn');
-  const orig=btn.innerHTML; btn.innerHTML='<span class="spin">🔄</span> Đang cập nhật...'; btn.disabled=true;
-  let cryptoIdx=-1, goldIdx=-1;
-  
-  for(let i=0;i<data.groups.length;i++){
-    if(data.groups[i].id==='crypto')cryptoIdx=i;
-    if(data.groups[i].id==='gold')goldIdx=i;
-  }
-  
-  if(cryptoIdx>=0){await refreshCryptoPrices(cryptoIdx);}
-  if(goldIdx>=0){await refreshGoldPrices(goldIdx);}
-  
-  if(btn){btn.innerHTML=orig;btn.disabled=false;}
 }
 
 // ===================== AUTO REFRESH CRYPTO =====================
