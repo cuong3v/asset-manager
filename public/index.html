@@ -360,7 +360,27 @@ function render() {
 }
 
 function formatNumber(n) { return isNaN(n)?'0':Math.round(n).toLocaleString('vi-VN'); }
-function parseNumber(s)  { const v=parseFloat((s||'').toString().replace(/\./g,'').replace(/[^0-9\-]/g,'')); return isNaN(v)?0:v; }
+function parseNumber(s)  { 
+  if(!s) return 0;
+  const str = s.toString().trim();
+  // Handle decimal point: keep the last dot if it's followed by 1-2 digits
+  const lastDotIndex = str.lastIndexOf('.');
+  let num;
+  if(lastDotIndex > 0){
+    const afterDot = str.substring(lastDotIndex + 1);
+    if(/^\d{1,2}$/.test(afterDot)){
+      // Last dot is decimal point, remove other dots (thousand separators)
+      num = parseFloat(str.substring(0, lastDotIndex).replace(/\./g, '') + '.' + afterDot);
+    } else {
+      // Last dot is thousand separator, remove all dots
+      num = parseFloat(str.replace(/\./g, ''));
+    }
+  } else {
+    // No dots, just parse
+    num = parseFloat(str.replace(/[^\d\-]/g, ''));
+  }
+  return isNaN(num) ? 0 : num;
+}
 
 function renderSummary() {
   const total = grandTotal();
