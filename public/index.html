@@ -34,6 +34,9 @@
 
   /* Groups */
   .group { background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:18px; overflow:hidden; }
+  #historySection { box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+  #historySection .group-header h2 { color:var(--text); font-size:18px; }
+  #historyChartWrap { background:linear-gradient(135deg,rgba(56,189,248,0.05) 0%,rgba(56,189,248,0) 100%); border-radius:8px; }
   .group-header { display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:var(--card2); flex-wrap:wrap; gap:8px; }
   .group-header h2 { font-size:17px; display:flex; align-items:center; gap:8px; }
   .group-total { font-weight:700; color:var(--accent); font-size:16px; }
@@ -112,19 +115,20 @@
 
     <!-- HISTORY -->
     <div class="group" id="historySection">
-      <div class="group-header" style="flex-wrap:wrap; gap:10px;">
-        <h2>📊 Biến động tài sản</h2>
-        <select id="historySelect" class="cell-input" style="width:auto; border:1px solid var(--border);" onchange="renderHistoryChart()"></select>
+      <div class="group-header" style="flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <h2 style="margin:0;">📊 Biến động tài sản</h2>
+          <select id="historySelect" class="cell-input" style="width:200px; border:1px solid var(--border); padding:8px 12px; border-radius:8px; font-size:14px;" onchange="renderHistoryChart()"></select>
+        </div>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; padding:0 18px 12px;">
-        <button class="btn btn-secondary" data-range="7" onclick="setHistoryRange('7')">7 ngày</button>
-        <button class="btn btn-secondary" data-range="30" onclick="setHistoryRange('30')">30 ngày</button>
-        <button class="btn btn-secondary" data-range="90" onclick="setHistoryRange('90')">90 ngày</button>
-        <button class="btn btn-secondary" data-range="365" onclick="setHistoryRange('365')">1 năm</button>
-        <button class="btn btn-secondary" data-range="all" onclick="setHistoryRange('all')">Tất cả</button>
-        <button class="btn btn-add" style="margin-left:auto;" onclick="manualSnapshot()">📌 Lưu mốc hôm nay</button>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; padding:0 18px 12px; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
+        <button class="btn btn-secondary" data-range="7" onclick="setHistoryRange('7')" style="font-size:13px; padding:6px 12px;">7 ngày</button>
+        <button class="btn btn-secondary" data-range="30" onclick="setHistoryRange('30')" style="font-size:13px; padding:6px 12px;">30 ngày</button>
+        <button class="btn btn-secondary" data-range="90" onclick="setHistoryRange('90')" style="font-size:13px; padding:6px 12px;">90 ngày</button>
+        <button class="btn btn-secondary" data-range="365" onclick="setHistoryRange('365')" style="font-size:13px; padding:6px 12px;">1 năm</button>
+        <button class="btn btn-secondary" data-range="all" onclick="setHistoryRange('all')" style="font-size:13px; padding:6px 12px;">Tất cả</button>
       </div>
-      <div id="historyChartWrap" style="padding:0 18px 18px;"></div>
+      <div id="historyChartWrap" style="padding:12px 18px 18px;"></div>
     </div>
 
     <div class="footer-actions">
@@ -609,7 +613,7 @@ function toggleAutoRefresh(){
 }
 
 // ===================== HISTORY CHART =====================
-let historyRange='all';
+let historyRange='7';
 function setHistoryRange(r){historyRange=r;renderHistoryChart();}
 function manualSnapshot(){recordSnapshot();localStorage.setItem(STORAGE_KEY,JSON.stringify(data));renderHistoryChart();saveToCloud(true);alert('Đã lưu mốc tài sản cho hôm nay.');}
 
@@ -624,8 +628,11 @@ function renderHistorySelectOptions(){
 
 function renderHistoryChart(){
   document.querySelectorAll('#historySection [data-range]').forEach(btn=>{
-    btn.style.borderColor=btn.dataset.range===historyRange?'var(--accent)':'var(--border)';
-    btn.style.color=btn.dataset.range===historyRange?'var(--accent)':'var(--text)';
+    const isActive = btn.dataset.range===historyRange;
+    btn.style.borderColor=isActive?'var(--accent)':'var(--border)';
+    btn.style.color=isActive?'var(--accent)':'var(--text)';
+    btn.style.backgroundColor=isActive?'rgba(56, 189, 248, 0.15)':'transparent';
+    btn.style.fontWeight=isActive?'600':'400';
   });
   const wrap=document.getElementById('historyChartWrap');
   let history=data.history.slice();
