@@ -499,8 +499,12 @@ function renderLastUpdated() {
 
 // ===================== MUTATIONS =====================
 function updateItem(gi,ii,field,val) {
+  console.log(`updateItem called: gi=${gi}, ii=${ii}, field=${field}, val=${val}`);
   data.groups[gi].items[ii][field] = field==='name'?val:parseNumber(val);
-  saveData(); render();
+  console.log(`After update:`, data.groups[gi].items[ii]);
+  saveData(); 
+  render();
+  console.log(`Debt total after render:`, data.groups.find(g=>g.id==='debt').items.reduce((s,i)=>s+i.value,0));
 }
 function updateGroupName(gi,val) { data.groups[gi].name=val; saveData(); render(); }
 function addItem(gi)       { data.groups[gi].items.push({name:'Tài sản mới',qty:0,value:0}); saveData(); render(); }
