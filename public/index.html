@@ -13,8 +13,50 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Tahoma, Arial, sans-serif; background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); color: var(--text); padding: 20px; min-height: 100vh; }
   .container { max-width: 1000px; margin: 0 auto; }
-  h1 { text-align: center; margin-bottom: 4px; font-size: 28px; }
-  .subtitle { text-align: center; color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+  .header-wrap {
+    text-align: center;
+    margin-bottom: 28px;
+    padding: 28px 20px 24px;
+    background: linear-gradient(180deg, rgba(56,189,248,0.07) 0%, transparent 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(56,189,248,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .header-wrap::before {
+    content: '';
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 60%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56,189,248,0.5), transparent);
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #e2e8f0 30%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(56,189,248,0.3));
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 0;
+  }
+  .subtitle::before, .subtitle::after {
+    content: '';
+    display: inline-block;
+    width: 32px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--muted));
+  }
+  .subtitle::after { background: linear-gradient(90deg, var(--muted), transparent); }
 
   /* Login */
   #loginScreen { display:flex; justify-content:center; align-items:center; min-height:80vh; }
@@ -26,11 +68,40 @@
   .login-error { color:var(--red); font-size:13px; margin-top:8px; min-height:20px; }
 
   /* Summary */
-  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:24px; }
-  .summary .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center; }
-  .summary .card .label { color:var(--muted); font-size:13px; margin-bottom:6px; }
-  .summary .card .value { font-size:22px; font-weight:700; }
-  .summary .card.total .value { color:var(--accent); }
+  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
+  .summary .card {
+    background: linear-gradient(145deg, var(--card) 0%, var(--card2) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .summary .card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: var(--card-accent, var(--accent));
+    opacity: 0.7;
+  }
+  .summary .card:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.25); }
+  .summary .card .label {
+    color: var(--muted); font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px;
+  }
+  .summary .card .value { font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .summary .card .pct {
+    font-size: 11px; color: var(--muted); margin-top: 5px;
+    background: rgba(255,255,255,0.04); border-radius: 20px;
+    display: inline-block; padding: 2px 8px;
+  }
+  .summary .card.total {
+    background: linear-gradient(145deg, #0f2744 0%, #1a3a5c 100%);
+    border-color: rgba(56,189,248,0.3);
+  }
+  .summary .card.total::before { background: var(--accent); opacity: 1; height: 3px; }
+  .summary .card.total .label { color: rgba(56,189,248,0.7); }
+  .summary .card.total .value { font-size: 22px; color: var(--accent); }
 
   /* Groups */
   .group { background:var(--card); border:1px solid var(--border); border-radius:12px; margin-bottom:18px; overflow:hidden; }
@@ -100,8 +171,10 @@
 <!-- MAIN APP (hidden until login) -->
 <div id="mainApp" style="display:none;">
   <div class="container">
-    <h1>💰 Quản Lý Tổng Gia Sản</h1>
-    <p class="subtitle" id="syncSubtitle">Đang kết nối...</p>
+    <div class="header-wrap">
+      <h1>💰 Quản Lý Tổng Gia Sản</h1>
+      <p class="subtitle" id="syncSubtitle">Dữ liệu đồng bộ tự động lên Cloud</p>
+    </div>
 
     <div id="syncBar"></div>
     <div class="summary" id="summary"></div>
@@ -404,10 +477,15 @@ function renderSummary() {
   let html = `<div class="card total"><div class="label">Tổng tài sản</div><div class="value">${formatNumber(total)} ₫</div></div>`;
   data.groups.forEach(g => {
     const t = groupTotal(g);
-    const isDept = g.id === 'debt';
-    const pct = total>0?(isDept?-(t/total*100):(t/total*100)).toFixed(1):'0.0';
-    const displayVal = isDept ? `-${formatNumber(t)}` : formatNumber(t);
-    html += `<div class="card"><div class="label">${escHtml(g.name)}</div><div class="value" style="${isDept?'color:#ef4444;':''}">${displayVal} ₫</div><div style="color:var(--muted);font-size:12px;margin-top:4px;">${pct}%</div></div>`;
+    const isDebt = g.id === 'debt';
+    const pct = total > 0 ? (t / Math.abs(total) * 100).toFixed(1) : '0.0';
+    const displayVal = isDebt ? (t > 0 ? `-${formatNumber(t)}` : '0') : formatNumber(t);
+    const valueColor = isDebt && t > 0 ? 'color:#ef4444;' : '';
+    html += `<div class="card" style="--card-accent:${g.color}">
+      <div class="label">${escHtml(g.name)}</div>
+      <div class="value" style="${valueColor}">${displayVal} ₫</div>
+      <div class="pct">${isDebt && t > 0 ? '-' : ''}${pct}%</div>
+    </div>`;
   });
   document.getElementById('summary').innerHTML = html;
   document.getElementById('syncSubtitle').textContent = 'Dữ liệu đồng bộ tự động lên Cloud';
