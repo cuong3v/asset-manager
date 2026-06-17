@@ -210,6 +210,7 @@ const DEFAULT_DATA = {
   groups: [
     { id:'cash',   name:'💵 Tiền mặt & Tiết kiệm', unit:'VNĐ', color:'#38bdf8', items:[{name:'Tiết kiệm ngân hàng',qty:1,value:0},{name:'Tiền mặt',qty:1,value:0}] },
     { id:'loans',  name:'🤝 Cho vay',               unit:'VNĐ', color:'#f472b6', items:[{name:'Cho vay cá nhân',qty:1,value:0}] },
+    { id:'debt',   name:'Nợ',                   unit:'VNĐ', color:'#ef4444', items:[{name:'Nợ mặc định',qty:1,value:0}] },
     { id:'funds',  name:'📜 Chứng chỉ quỹ',         unit:'VNĐ', color:'#a78bfa', items:[{name:'Quỹ mở',qty:0,value:0}] },
     { id:'stocks', name:'📈 Cổ phiếu',              unit:'VNĐ', color:'#22c55e', items:[{name:'VEA',qty:0,value:0}] },
     { id:'crypto', name:'🪙 Crypto',                unit:'VNĐ', color:'#f97316', items:[{name:'BTC',qty:0,value:0},{name:'SOL',qty:0,value:0}] },
@@ -270,6 +271,10 @@ async function initApp() {
 function migrateData() {
   const ids = data.groups.map(g => g.id);
   if (!ids.includes('loans')) data.groups.splice(1,0,{id:'loans',name:'🤝 Cho vay',unit:'VNĐ',color:'#f472b6',items:[{name:'Cho vay cá nhân',qty:1,value:0}]});
+  if (!ids.includes('debt')) {
+    const li = data.groups.findIndex(g=>g.id==='loans');
+    data.groups.splice(li>=0?li+1:2,0,{id:'debt',name:'Nợ',unit:'VNĐ',color:'#ef4444',items:[{name:'Nợ mặc định',qty:1,value:0}]});
+  }
   if (!ids.includes('funds')) {
     const si = data.groups.findIndex(g=>g.id==='stocks');
     data.groups.splice(si>=0?si:data.groups.length,0,{id:'funds',name:'📜 Chứng chỉ quỹ',unit:'VNĐ',color:'#a78bfa',items:[{name:'Quỹ mở',qty:0,value:0}]});
@@ -335,7 +340,13 @@ function groupTotal(g) {
   }
   return g.items.reduce((s,i) => s + i.qty*i.value, 0); 
 }
-function grandTotal()  { return data.groups.reduce((s,g) => s + groupTotal(g), 0); }
+function grandTotal()  { 
+  let total = data.groups.reduce((s,g) => {
+    if(g.id==='debt') return s - groupTotal(g);
+    return s + groupTotal(g);
+  }, 0);
+  return total;
+}
 
 function saveData() {
   data.lastUpdated = new Date().toLocaleString('vi-VN');
@@ -393,8 +404,10 @@ function renderSummary() {
   let html = `<div class="card total"><div class="label">Tổng tài sản</div><div class="value">${formatNumber(total)} ₫</div></div>`;
   data.groups.forEach(g => {
     const t = groupTotal(g);
-    const pct = total>0?(t/total*100).toFixed(1):'0.0';
-    html += `<div class="card"><div class="label">${escHtml(g.name)}</div><div class="value">${formatNumber(t)} ₫</div><div style="color:var(--muted);font-size:12px;margin-top:4px;">${pct}%</div></div>`;
+    const isDept = g.id === 'debt';
+    const pct = total>0?(isDept?-(t/total*100):(t/total*100)).toFixed(1):'0.0';
+    const displayVal = isDept ? `-${formatNumber(t)}` : formatNumber(t);
+    html += `<div class="card"><div class="label">${escHtml(g.name)}</div><div class="value" style="${isDept?'color:#ef4444;':''}">${displayVal} ₫</div><div style="color:var(--muted);font-size:12px;margin-top:4px;">${pct}%</div></div>`;
   });
   document.getElementById('summary').innerHTML = html;
   document.getElementById('syncSubtitle').textContent = 'Dữ liệu đồng bộ tự động lên Cloud';
@@ -451,14 +464,14 @@ function renderGroups() {
       ${g.id==='crypto'?`<div class="price-note">ℹ️ Tên tài sản chứa ký hiệu coin (BTC, ETH, SOL...). Nguồn: CoinGecko (VNĐ).</div>`:''}
       ${g.id==='gold'?`<div class="price-note">ℹ️ Giá bán ra Vàng nhẫn 9999 (VNĐ/chỉ). Nguồn: DOJI, dự phòng SJC.</div>`:''}
       <table><thead><tr>
-        ${['cash','loans','funds'].includes(g.id)?
+        ${['cash','loans','funds','debt'].includes(g.id)?
           '<th>Tên tài sản</th><th style="text-align:right">Tổng tiền (₫)</th><th></th>' :
           '<th>Tên tài sản</th><th style="text-align:right">Số lượng</th><th style="text-align:right">Giá / Đơn vị (₫)</th><th style="text-align:right">Thành tiền (₫)</th><th></th>'
         }
       </tr></thead><tbody>`;
     g.items.forEach((item,ii) => {
       const rt=item.qty*item.value;
-      const isSimple=['cash','loans','funds'].includes(g.id);
+      const isSimple=['cash','loans','funds','debt'].includes(g.id);
       if(isSimple){
         html+=`<tr>
           <td><input class="cell-input" value="${escHtml(item.name)}" onchange="updateItem(${gi},${ii},'name',this.value)"></td>
