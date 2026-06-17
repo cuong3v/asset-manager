@@ -335,7 +335,7 @@ function setSyncBar(msg, type) {
 
 // ===================== DATA HELPERS =====================
 function groupTotal(g) { 
-  if(['cash','loans','funds'].includes(g.id)) {
+  if(['cash','loans','funds','debt'].includes(g.id)) {
     return g.items.reduce((s,i) => s + i.value, 0);
   }
   return g.items.reduce((s,i) => s + i.qty*i.value, 0); 
@@ -499,12 +499,8 @@ function renderLastUpdated() {
 
 // ===================== MUTATIONS =====================
 function updateItem(gi,ii,field,val) {
-  console.log(`updateItem called: gi=${gi}, ii=${ii}, field=${field}, val=${val}`);
   data.groups[gi].items[ii][field] = field==='name'?val:parseNumber(val);
-  console.log(`After update:`, data.groups[gi].items[ii]);
-  saveData(); 
-  render();
-  console.log(`Debt total after render:`, data.groups.find(g=>g.id==='debt').items.reduce((s,i)=>s+i.value,0));
+  saveData(); render();
 }
 function updateGroupName(gi,val) { data.groups[gi].name=val; saveData(); render(); }
 function addItem(gi)       { data.groups[gi].items.push({name:'Tài sản mới',qty:0,value:0}); saveData(); render(); }
